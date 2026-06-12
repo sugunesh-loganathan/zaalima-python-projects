@@ -29,10 +29,24 @@ class ResizeResponse(BaseModel):
 
 class VideoResizeResponse(BaseModel):
     message: str
+
     original_file: str
     compressed_file: str
+    thumbnail_file: str
 
     original_size_mb: float
     compressed_size_mb: float
 
     reduction_percent: float
+
+    duration_seconds: float
+
+    original_width: int
+    original_height: int
+
+    compressed_width: int
+    compressed_height: int
+
+    processing_time_seconds: float
+
+    download_url: str
