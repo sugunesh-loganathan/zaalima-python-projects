@@ -50,3 +50,9 @@ class VideoResizeResponse(BaseModel):
     processing_time_seconds: float
 
     download_url: str
+
+from pydantic import BaseModel
+
+class CreateJobResponse(BaseModel):
+    job_id: str
+    upload_url: str
