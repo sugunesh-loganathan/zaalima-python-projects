@@ -6,6 +6,7 @@ from app.routes.delete import router as delete_router
 from app.routes.resize import router as resize_router
 from app.routes.video_resize import router as video_resize_router
 
+
 app = FastAPI(
     title="Media Processing Service",
     description="Image and Video Upload API",
