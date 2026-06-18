@@ -51,7 +51,10 @@ class VideoResizeResponse(BaseModel):
 
     download_url: str
 
-from pydantic import BaseModel
+class CreateJobRequest(BaseModel):
+    media_type: str
+    input_filename: str
+
 
 class CreateJobResponse(BaseModel):
     job_id: str

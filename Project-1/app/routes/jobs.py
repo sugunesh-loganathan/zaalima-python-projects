@@ -1,36 +1,56 @@
-import uuid
 import os
+import uuid
 
-from fastapi import APIRouter
-from app.models.job_models import (
+from fastapi import APIRouter, HTTPException
+
+from app.models.response_models import (
     CreateJobRequest,
     CreateJobResponse
 )
 
-from app.services.s3_service import s3_client
+from app.services.s3_service import (
+    s3_client,
+    BUCKET_NAME
+)
 
-router = APIRouter(tags=["Jobs"])
+router = APIRouter(
+    tags=["Job Processing"]
+)
+
 
 @router.post(
-    "/jobs",
+    "/jobs/create",
     response_model=CreateJobResponse
 )
-def create_job(request: CreateJobRequest):
+def create_job(
+    request: CreateJobRequest
+):
 
-    job_id = str(uuid.uuid4())
+    try:
 
-    s3_key = f"uploads/{job_id}_{request.input_filename}"
+        job_id = str(uuid.uuid4())
 
-    upload_url = s3_client.generate_presigned_url(
-        "put_object",
-        Params={
-            "Bucket": os.getenv("AWS_BUCKET_NAME"),
-            "Key": s3_key
-        },
-        ExpiresIn=3600
-    )
+        s3_key = (
+            f"uploads/{job_id}_{request.input_filename}"
+        )
 
-    return CreateJobResponse(
-        job_id=job_id,
-        upload_url=upload_url
-    )
+        upload_url = s3_client.generate_presigned_url(
+            ClientMethod="put_object",
+            Params={
+                "Bucket": BUCKET_NAME,
+                "Key": s3_key
+            },
+            ExpiresIn=3600
+        )
+
+        return CreateJobResponse(
+            job_id=job_id,
+            upload_url=upload_url
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
