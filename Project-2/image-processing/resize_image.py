@@ -1,18 +1,25 @@
 from PIL import Image
 
-# Resize image while maintaining aspect ratio
 def resize_image(input_path, output_path):
-    img = Image.open(input_path)
+    try:
+        img = Image.open(input_path)
 
-    # Maximum size 800x600
-    img.thumbnail((800, 600))
+        # Maintain aspect ratio
+        img.thumbnail((800, 600))
 
-    img.save(output_path)
+        # Save with quality
+        img.save(output_path, quality=95)
 
-    print("Image resized successfully!")
+        print("Image resized successfully!")
+
+    except FileNotFoundError:
+        print("Error: Image file not found.")
+
+    except Exception as e:
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     resize_image(
-        "Project-2/image-processing/sample.jpg",
+        "Project-2/image-processing/sample1.jpg",
         "Project-2/image-processing/resized_sample.jpg"
     )
