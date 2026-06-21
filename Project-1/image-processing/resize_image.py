@@ -17,9 +17,9 @@ def resize_image(input_path, output_path):
 
     except Exception as e:
         print(f"Error: {e}")
-
+        
 if __name__ == "__main__":
     resize_image(
-        "Project-2/image-processing/sample1.jpg",
-        "Project-2/image-processing/resized_sample.jpg"
+        "Project-1/image-processing/sample1.jpg",
+        "Project-1/image-processing/resized_sample.jpg"
     )
