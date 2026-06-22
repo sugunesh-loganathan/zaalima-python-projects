@@ -1,0 +1,4 @@
+pip freeze
+pip celery
+pip redis
+pip amqp
