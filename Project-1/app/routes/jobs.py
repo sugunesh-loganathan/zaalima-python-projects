@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.services.job_service import create_job, get_job
+from app.services.job_service import create_job, get_job, start_job
 from app.utils.validation import validate_file_type
 
 
@@ -39,4 +39,17 @@ def job_status(job_id: str):
     return {
         "job_id": job_id,
         "status": job["status"]
+    }
+
+@router.post("/jobs/start/{job_id}")
+def start_processing(job_id: str):
+
+    job = start_job(job_id)
+
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    return {
+        "message": "Processing Started",
+        "job_id": job_id
     }
