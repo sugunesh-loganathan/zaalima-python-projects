@@ -1,27 +1,35 @@
+import json
 import time
 
 from app.celery_app import celery
-from app.models.job_store import jobs
+from app.core.redis_client import redis_client
 
 
 @celery.task(name="app.tasks.worker.process_image")
 def process_image(job_id: str):
 
-    job = jobs.get(job_id)
+    job = redis_client.get(job_id)
 
     if not job:
         return "Job not found"
 
-    print(f"Processing Job : {job_id}")
+    job = json.loads(job)
 
+    print(f"========== Processing {job_id} ==========")
+
+    # Update status -> processing
     job["status"] = "processing"
+    redis_client.set(job_id, json.dumps(job))
 
-    # Temporary processing simulation
+    # Simulate heavy processing
     time.sleep(5)
 
+    # Update status -> completed
     job["status"] = "completed"
     job["message"] = "Image processed successfully"
 
-    print(f"Completed Job : {job_id}")
+    redis_client.set(job_id, json.dumps(job))
+
+    print(f"========== Completed {job_id} ==========")
 
     return "Success"

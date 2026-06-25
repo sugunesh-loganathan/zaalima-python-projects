@@ -1,6 +1,7 @@
+import json
 import uuid
 
-from app.models.job_store import jobs
+from app.core.redis_client import redis_client
 from app.core.s3 import generate_presigned_url
 from app.tasks.worker import process_image
 
@@ -11,25 +12,33 @@ def create_job(file_name: str, file_type: str):
 
     upload_url = generate_presigned_url(file_name, file_type)
 
-    jobs[job_id] = {
+    job = {
         "job_id": job_id,
         "file_name": file_name,
         "status": "pending",
         "upload_url": upload_url,
-        "processed_file": None,
+        "processed_file": "",
         "message": ""
     }
 
-    return jobs[job_id]
+    redis_client.set(job_id, json.dumps(job))
+
+    return job
 
 
 def get_job(job_id: str):
-    return jobs.get(job_id)
+
+    job = redis_client.get(job_id)
+
+    if not job:
+        return None
+
+    return json.loads(job)
 
 
 def start_job(job_id: str):
 
-    job = jobs.get(job_id)
+    job = get_job(job_id)
 
     if not job:
         return None
