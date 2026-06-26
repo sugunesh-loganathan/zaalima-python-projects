@@ -1,6 +1,6 @@
 import json
 import time
-
+from app.services.image_service import download_image
 from app.celery_app import celery
 from app.core.redis_client import redis_client
 
@@ -22,7 +22,9 @@ def process_image(job_id: str):
     redis_client.set(job_id, json.dumps(job))
 
     # Simulate heavy processing
-    time.sleep(5)
+    local_image = download_image(job["file_name"])
+
+    print(f"Downloaded Image: {local_image}")
 
     # Update status -> completed
     job["status"] = "completed"
