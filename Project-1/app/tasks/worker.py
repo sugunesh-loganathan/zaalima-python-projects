@@ -17,7 +17,7 @@ def process_image(job_id: str):
 
     print(f"========== Processing {job_id} ==========")
 
-    # Update status -> processing
+    # Update status -> processin
     job["status"] = "processing"
     redis_client.set(job_id, json.dumps(job))
 
