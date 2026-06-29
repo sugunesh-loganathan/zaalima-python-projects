@@ -16,15 +16,17 @@ s3 = boto3.client(
 )
 
 
-def download_image(file_name: str):
+def download_image(file_key: str):
 
     os.makedirs("temp", exist_ok=True)
+
+    file_name = file_key.split("/")[-1]
 
     local_path = f"temp/{file_name}"
 
     s3.download_file(
         AWS_BUCKET_NAME,
-        f"uploads/{file_name}",
+        file_key,
         local_path
     )
 

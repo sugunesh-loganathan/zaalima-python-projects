@@ -17,10 +17,9 @@ s3_client = boto3.client(
 
 def generate_presigned_url(file_name: str, file_type: str):
 
-    # 🔥 unique file name generate
     file_key = f"uploads/{uuid.uuid4()}_{file_name}"
 
-    return s3_client.generate_presigned_url(
+    url = s3_client.generate_presigned_url(
         ClientMethod="put_object",
         Params={
             "Bucket": AWS_BUCKET_NAME,
@@ -29,3 +28,8 @@ def generate_presigned_url(file_name: str, file_type: str):
         },
         ExpiresIn=3600
     )
+
+    return {
+        "upload_url": url,
+        "file_key": file_key
+    }

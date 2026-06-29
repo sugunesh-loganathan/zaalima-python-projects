@@ -10,16 +10,20 @@ def create_job(file_name: str, file_type: str):
 
     job_id = str(uuid.uuid4())
 
-    upload_url = generate_presigned_url(file_name, file_type)
+    s3_data = generate_presigned_url(file_name, file_type)
+
+    upload_url = s3_data["upload_url"]
+    file_key = s3_data["file_key"]
 
     job = {
-        "job_id": job_id,
-        "file_name": file_name,
-        "status": "pending",
-        "upload_url": upload_url,
-        "processed_file": "",
-        "message": ""
-    }
+    "job_id": job_id,
+    "file_name": file_name,
+    "file_key": file_key,
+    "status": "pending",
+    "upload_url": upload_url,
+    "processed_file": "",
+    "message": ""
+}
 
     redis_client.set(job_id, json.dumps(job))
 
