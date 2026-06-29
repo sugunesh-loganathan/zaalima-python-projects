@@ -1,4 +1,5 @@
 from PIL import Image
+from pathlib import Path
 
 def resize_image(input_path, output_path):
     try:
@@ -17,9 +18,13 @@ def resize_image(input_path, output_path):
 
     except Exception as e:
         print(f"Error: {e}")
-        
+
+
 if __name__ == "__main__":
-    resize_image(
-        "Project-1/image-processing/sample1.jpg",
-        "Project-1/image-processing/resized_sample.jpg"
-    )
+    # Get the folder where this script is located
+    current_dir = Path(__file__).parent
+
+    input_image = current_dir / "sample3.jpg"
+    output_image = current_dir / "resized_sample.jpg"
+
+    resize_image(input_image, output_image)
