@@ -31,3 +31,15 @@ def download_image(file_key: str):
     )
 
     return local_path
+
+def upload_processed_image(local_path: str, file_name: str):
+
+    s3_key = f"processed/{file_name}"
+
+    s3.upload_file(
+        local_path,
+        AWS_BUCKET_NAME,
+        s3_key
+    )
+
+    return f"https://{AWS_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"

@@ -37,8 +37,10 @@ def job_status(job_id: str):
         raise HTTPException(status_code=404, detail="Job not found")
 
     return {
-        "job_id": job_id,
-        "status": job["status"]
+    "job_id": job_id,
+    "status": job["status"],
+    "processed_file": job["processed_file"],
+    "message": job["message"]
     }
 
 @router.post("/jobs/start/{job_id}")
