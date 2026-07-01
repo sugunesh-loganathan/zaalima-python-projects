@@ -2,7 +2,10 @@ import json
 import time
 from app.celery_app import celery
 from app.core.redis_client import redis_client
-from app.services.processing_service import resize_image
+from app.services.processing_service import (
+    resize_image,
+    delete_file
+)
 from app.services.image_service import (
     download_image,
     upload_processed_image
