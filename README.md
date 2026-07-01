@@ -1,1 +1,3 @@
-# zaalima-python-projects
+Team Leader: Sugunesh
+
+Zaalima Python Internship Project
