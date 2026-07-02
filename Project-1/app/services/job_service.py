@@ -6,7 +6,7 @@ from app.core.s3 import generate_presigned_url
 from app.tasks.worker import process_image
 
 
-def create_job(file_name: str, file_type: str):
+def create_job(file_name: str, file_type: str, media_type: str):
 
     job_id = str(uuid.uuid4())
 
@@ -19,6 +19,7 @@ def create_job(file_name: str, file_type: str):
     "job_id": job_id,
     "file_name": file_name,
     "file_key": file_key,
+    "media_type": media_type,
     "status": "pending",
     "upload_url": upload_url,
     "processed_file": "",

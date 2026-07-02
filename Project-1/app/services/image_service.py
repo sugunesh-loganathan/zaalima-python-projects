@@ -16,7 +16,7 @@ s3 = boto3.client(
 )
 
 
-def download_image(file_key: str):
+def download_media(file_key: str):
 
     os.makedirs("temp", exist_ok=True)
 
