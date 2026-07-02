@@ -70,3 +70,26 @@ Test Result:
 ### Result
 ✅ Documentation integrated successfully.
 No conflicts or issues found.
+
+##   Day 4 - anand's integration
+
+**Date:** 28 June 2026
+
+### Issue Identified
+During application startup, several required Python dependencies were missing, preventing the FastAPI server from launching successfully.
+
+### Findings
+- `redis` package missing
+- `boto3` package missing
+- `python-dotenv` package missing
+- Project contained two separate `requirements.txt` files with inconsistent dependency definitions.
+- Root `requirements.txt` incorrectly contained pip commands instead of package names.
+- `app/requirements.txt` contained only partial dependencies.
+
+### Resolution
+- Verified all imported third-party libraries.
+- Consolidated required dependencies into the project-level `requirements.txt`.
+- Recommended maintaining a single source of dependency management for the project.
+
+### Status
+✅ Dependency validation completed.
