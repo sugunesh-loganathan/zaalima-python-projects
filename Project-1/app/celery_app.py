@@ -1,9 +1,14 @@
 from celery import Celery
 
+from app.core.config import (
+    CELERY_BROKER_URL,
+    CELERY_RESULT_BACKEND
+)
+
 celery = Celery(
     "media_processor",
-    broker="pyamqp://guest:guest@localhost//",
-    backend="rpc://",
+    broker=CELERY_BROKER_URL,
+    backend=CELERY_RESULT_BACKEND,
     include=["app.tasks.worker"]
 )
 
