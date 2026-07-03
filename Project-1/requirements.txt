@@ -1,4 +1,9 @@
-pip freeze
-pip celery
-pip redis
-pip amqp
+fastapi
+uvicorn
+python-multipart
+redis
+celery
+boto3
+python-dotenv
+pillow
+
