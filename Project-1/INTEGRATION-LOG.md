@@ -93,3 +93,12 @@ During application startup, several required Python dependencies were missing, p
 
 ### Status
 ✅ Dependency validation completed.
+
+
+date: 03 july 2026
+
+- S3 is working
+- FastAPI is working
+- celery and redis are installed
+-swagger UI is working.
+- docker is now under error development.
