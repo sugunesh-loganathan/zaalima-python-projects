@@ -27,7 +27,7 @@ def process_image(job_id):
         message="Processing started..."
     )
 
-    print("Processing image...")
+    print("Processing media...")
     time.sleep(5)
 
     processed_file = f"processed/{job['file_name']}"
