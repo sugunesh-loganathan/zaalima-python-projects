@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+pillow
+redis
+celery
+boto3
+python-dotenv
+amqp
