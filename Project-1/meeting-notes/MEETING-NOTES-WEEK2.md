@@ -1,7 +1,7 @@
 # Week 2 Meeting Notes
 
 ## Date
-[Today's Date]
+[7/06/2026 Date]
 
 ## Attendees
 - Sugunesh

@@ -2,10 +2,10 @@
 
 - [x] Repository Setup
 - [x] Branch Creation
-- [ ] Meeting Conducted
+- [x] Meeting Conducted
 - [x] Task Allocation Completed
 - [x] Upload Endpoint
 - [x] Image Resizing
 - [x] File Storage
-- [ ] Research Documentation
-- [ ] QA Documentation
+- [x] Research Documentation
+- [x] QA Documentation
