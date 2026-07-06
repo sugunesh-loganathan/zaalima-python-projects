@@ -102,3 +102,11 @@ date: 03 july 2026
 - celery and redis are installed
 -swagger UI is working.
 - docker is now under error development.
+
+
+
+Date: 07 July 2026
+
+- Tested the whole project (No Issues found)
+- Informed the teammates the project is now ready to work.
+- Ready to elaborate the flow of work on review date.
