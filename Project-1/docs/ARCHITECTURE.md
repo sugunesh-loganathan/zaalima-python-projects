@@ -168,7 +168,23 @@ Performs:
 - Kubernetes Deployment
 - Monitoring using Prometheus & Grafana
 
+Sequence diagram:
 
+User
+   ↓
+FastAPI
+   ↓
+Redis
+   ↓
+RabbitMQ
+   ↓
+Celery
+   ↓
+Image Processing
+   ↓
+Redis Update
+   ↓
+Status API
 
 ---
 **Project:** Distributed Media Processing Microservice  
