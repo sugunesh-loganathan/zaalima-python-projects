@@ -186,6 +186,8 @@ Redis Update
    ↓
 Status API
 
+done.
+
 ---
 **Project:** Distributed Media Processing Microservice  
 **Organization:** ZAALIMA Internship Program  
