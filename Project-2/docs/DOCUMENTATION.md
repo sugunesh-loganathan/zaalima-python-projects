@@ -25,28 +25,4 @@ The documentation will cover:
 - `docs/DOCUMENTATION.md` – Documentation overview
 - `docs/TROUBLESHOOTING.md` – Troubleshooting information
 
-- ## Installation Guide
 
-### Prerequisites
-
-Before setting up Project-2, make sure the following are installed:
-
-- Python
-- Git
-- Docker (if required by the project)
-
-### Setup Steps
-
-1. Clone the repository.
-2. Open the Project-2 folder.
-3. Create and activate a Python virtual environment.
-4. Install the required dependencies using `requirements.txt`.
-5. Configure the environment variables using `.env.example`.
-6. Run the Project-2 application.
-
-### Install Dependencies
-
-Install the required Python packages using:
-
-```bash
-pip install -r requirements.txt
