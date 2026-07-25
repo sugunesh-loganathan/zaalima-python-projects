@@ -1,16 +1,7 @@
 from aws.auth import AWSAuth
-from aws.client_factory import AWSClientFactory
 
-auth = AWSAuth()
+auth = AWSAuth(region_name="ap-south-1")
 
-factory = AWSClientFactory(auth)
+session = auth.create_session()
 
-ec2 = factory.get_client("ec2")
-cloudwatch = factory.get_client("cloudwatch")
-
-sts = factory.get_client("sts")
-
-
-print(ec2)
-print(cloudwatch)
-print(sts)
+print(session)

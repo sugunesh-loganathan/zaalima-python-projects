@@ -1,4 +1,5 @@
 import boto3
+from config.config import Config
 
 from botocore.exceptions import (
     NoCredentialsError,
@@ -13,17 +14,22 @@ from aws.exceptions import AWSAuthenticationError
 class AWSAuth:
 
     def __init__(self, profile_name=None, region_name=None):
+
         self.profile_name = profile_name
-        self.region_name = region_name
+
+        self.config = Config(region_name)
+
         self.session = None
 
 #Create Session Method
     def create_session(self):
 
+        self.config.validate_region()
+
         self.session = boto3.Session(
             profile_name=self.profile_name,
-            region_name=self.region_name
-        )
+            region_name=self.config.get_region()
+    )
 
         return self.session
 #validation and error handling
