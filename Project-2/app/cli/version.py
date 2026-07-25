@@ -4,9 +4,14 @@ from app.config import settings
 
 app = typer.Typer()
 
+
 @app.command()
 def show():
-    """Show application version."""
-    typer.echo(
-        f"{settings.PROJECT_NAME} - Version {settings.VERSION}"
-    )
+    """
+    Display application version and project information.
+    """
+
+    typer.echo(f"\n{settings.PROJECT_NAME}")
+    typer.echo(f"Version : {settings.VERSION}")
+    typer.echo(f"Author  : {settings.AUTHOR}")
+    typer.echo(f"License : {settings.LICENSE}")

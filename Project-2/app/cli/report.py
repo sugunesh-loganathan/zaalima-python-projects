@@ -6,7 +6,7 @@ app = typer.Typer()
 
 @app.command()
 def generate():
-    """Generate infrastructure report."""
+    """Generate infrastructure optimization reports."""
     logger.info("Generating report...")
 
     

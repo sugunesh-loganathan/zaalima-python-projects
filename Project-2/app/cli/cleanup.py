@@ -6,5 +6,5 @@ app = typer.Typer()
 
 @app.command()
 def run():
-    """Cleanup unused resources."""
+    """Remove unused cloud resources after user confirmation."""
     logger.info("Running cleanup...")
