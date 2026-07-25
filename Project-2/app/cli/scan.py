@@ -6,7 +6,7 @@ app = typer.Typer()
 
 @app.command()
 def run():
-    """Scan AWS Infrastructure"""
+    """Scan AWS cloud infrastructure for unused and underutilized resources."""
     logger.info("Starting infrastructure scan...")
 
     

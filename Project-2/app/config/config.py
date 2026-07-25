@@ -12,6 +12,12 @@ class Settings:
 
     DEFAULT_REGION = "ap-south-1"
 
+    AUTHOR = "Zaalima Development Team"
+    LICENSE = "MIT"
+    DESCRIPTION = (
+        "CLI tool to analyze AWS infrastructure and identify cost optimization opportunities."
+    )
+
     REPORT_FOLDER = "reports"
 
     LOG_LEVEL = "INFO"
