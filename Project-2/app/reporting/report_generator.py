@@ -1,3 +1,4 @@
+from app.reporting.exports.json_export import export_json
 from rich.console import Console
 from app.reporting.layout import create_layout
 from app.reporting.exports.csv_export import export_csv
@@ -23,3 +24,4 @@ def generate_report():
     console.print(layout)
 
     export_csv(scan_data)
+    export_json(scan_data)
