@@ -9,7 +9,7 @@ from app.reporting.cost_summary import create_cost_table
 def create_layout(scan_data):
     layout = Layout(name="root")
 
-    # Main Layout
+    # ---------------- MAIN LAYOUT ----------------
     layout.split_column(
         Layout(name="header", size=3),
         Layout(name="body"),
@@ -38,22 +38,19 @@ def create_layout(scan_data):
     )
 
     # ---------------- SUMMARY TABLE ----------------
-    table = Table(
-    show_header=True,
-    header_style="bold cyan",
-    )
+    summary_table = Table(show_header=True, header_style="bold cyan")
 
-    table.add_column("Metric")
-    table.add_column("Value", justify="center")
+    summary_table.add_column("Metric")
+    summary_table.add_column("Value", justify="center")
 
-    table.add_row("Total Resources", str(scan_data["total_resources"]))
-    table.add_row("Passed", str(scan_data["passed"]))
-    table.add_row("Warnings", str(scan_data["warnings"]))
-    table.add_row("Critical", str(scan_data["critical"]))
+    summary_table.add_row("Total Resources", str(scan_data["total_resources"]))
+    summary_table.add_row("Passed", str(scan_data["passed"]))
+    summary_table.add_row("Warnings", str(scan_data["warnings"]))
+    summary_table.add_row("Critical", str(scan_data["critical"]))
 
     layout["summary"].update(
         Panel(
-            table,
+            summary_table,
             title="Scan Summary",
             border_style="cyan",
         )
@@ -78,14 +75,21 @@ def create_layout(scan_data):
     )
 
     # ---------------- RECOMMENDATIONS ----------------
-    recommendations = ""
+    recommendation_text = Text()
 
-    for item in scan_data["recommendations"]:
-        recommendations += f"• {item}\n"
+    recommendation_text.append("🔴 Critical\n", style="bold red")
+    recommendation_text.append("• Enable CloudTrail Logging\n\n")
+
+    recommendation_text.append("🟡 Warning\n", style="bold yellow")
+    recommendation_text.append("• Remove Unused EBS Volumes\n\n")
+
+    recommendation_text.append("🟢 Recommendation\n", style="bold green")
+    recommendation_text.append("• Enable S3 Versioning\n")
+    recommendation_text.append("• Reduce EC2 Idle Instances")
 
     layout["right"].update(
         Panel(
-            recommendations,
+            recommendation_text,
             title="Recommendations",
             border_style="yellow",
         )
