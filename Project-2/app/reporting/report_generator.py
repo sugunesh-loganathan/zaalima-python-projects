@@ -1,5 +1,6 @@
 from rich.console import Console
 from app.reporting.layout import create_layout
+from app.reporting.exports.csv_export import export_csv
 
 console = Console()
 
@@ -20,3 +21,5 @@ def generate_report():
 
     layout = create_layout(scan_data)
     console.print(layout)
+
+    export_csv(scan_data)
