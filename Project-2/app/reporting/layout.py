@@ -6,13 +6,16 @@ from rich.text import Text
 from app.reporting.cost_summary import create_cost_table
 from app.reporting.report_metadata import create_metadata_table
 from app.reporting.audit_status import create_audit_status
+from app.reporting.security_score import create_security_score
 
 
 def create_layout(scan_data):
 
     layout = Layout(name="root")
 
-    # ---------------- MAIN LAYOUT ----------------
+    # =========================
+    # MAIN LAYOUT
+    # =========================
 
     layout.split_column(
         Layout(name="header", size=3),
@@ -26,13 +29,16 @@ def create_layout(scan_data):
     )
 
     layout["left"].split_column(
-        Layout(name="metadata", size=10),
+        Layout(name="metadata", size=9),
         Layout(name="status", size=5),
+        Layout(name="security", size=7),
         Layout(name="summary"),
         Layout(name="cost"),
     )
 
-    # ---------------- HEADER ----------------
+    # =========================
+    # HEADER
+    # =========================
 
     layout["header"].update(
         Panel(
@@ -44,7 +50,9 @@ def create_layout(scan_data):
         )
     )
 
-    # ---------------- REPORT INFORMATION ----------------
+    # =========================
+    # REPORT INFORMATION
+    # =========================
 
     metadata_table = create_metadata_table()
 
@@ -56,26 +64,56 @@ def create_layout(scan_data):
         )
     )
 
-    # ---------------- AUDIT STATUS ----------------
+    # =========================
+    # AUDIT STATUS
+    # =========================
 
     audit_status = create_audit_status(scan_data)
 
     layout["status"].update(audit_status)
 
-    # ---------------- SUMMARY TABLE ----------------
+    # =========================
+    # SECURITY SCORE
+    # =========================
+
+    score = 87
+
+    security_panel = create_security_score(score)
+
+    layout["security"].update(security_panel)
+
+    # =========================
+    # SUMMARY TABLE
+    # =========================
 
     summary_table = Table(
         show_header=True,
         header_style="bold cyan",
+        expand=True,
     )
 
     summary_table.add_column("Metric")
     summary_table.add_column("Value", justify="center")
 
-    summary_table.add_row("Total Resources", str(scan_data["total_resources"]))
-    summary_table.add_row("Passed", str(scan_data["passed"]))
-    summary_table.add_row("Warnings", str(scan_data["warnings"]))
-    summary_table.add_row("Critical", str(scan_data["critical"]))
+    summary_table.add_row(
+        "Total Resources",
+        str(scan_data["total_resources"])
+    )
+
+    summary_table.add_row(
+        "Passed",
+        str(scan_data["passed"])
+    )
+
+    summary_table.add_row(
+        "Warnings",
+        str(scan_data["warnings"])
+    )
+
+    summary_table.add_row(
+        "Critical",
+        str(scan_data["critical"])
+    )
 
     layout["summary"].update(
         Panel(
@@ -85,7 +123,9 @@ def create_layout(scan_data):
         )
     )
 
-    # ---------------- COST SUMMARY ----------------
+    # =========================
+    # COST SUMMARY
+    # =========================
 
     cost_data = {
         "EC2": 120,
@@ -104,19 +144,42 @@ def create_layout(scan_data):
         )
     )
 
-    # ---------------- RECOMMENDATIONS ----------------
+    # =========================
+    # RECOMMENDATIONS
+    # =========================
 
     recommendation_text = Text()
 
-    recommendation_text.append("🔴 Critical\n", style="bold red")
-    recommendation_text.append("• Enable CloudTrail Logging\n\n")
+    recommendation_text.append(
+        "🔴 Critical\n",
+        style="bold red",
+    )
 
-    recommendation_text.append("🟡 Warning\n", style="bold yellow")
-    recommendation_text.append("• Remove Unused EBS Volumes\n\n")
+    recommendation_text.append(
+        "• Enable CloudTrail Logging\n\n"
+    )
 
-    recommendation_text.append("🟢 Recommendation\n", style="bold green")
-    recommendation_text.append("• Enable S3 Versioning\n")
-    recommendation_text.append("• Reduce EC2 Idle Instances")
+    recommendation_text.append(
+        "🟡 Warning\n",
+        style="bold yellow",
+    )
+
+    recommendation_text.append(
+        "• Remove Unused EBS Volumes\n\n"
+    )
+
+    recommendation_text.append(
+        "🟢 Recommendation\n",
+        style="bold green",
+    )
+
+    recommendation_text.append(
+        "• Enable S3 Versioning\n"
+    )
+
+    recommendation_text.append(
+        "• Reduce EC2 Idle Instances"
+    )
 
     layout["right"].update(
         Panel(
@@ -126,7 +189,9 @@ def create_layout(scan_data):
         )
     )
 
-    # ---------------- FOOTER ----------------
+    # =========================
+    # FOOTER
+    # =========================
 
     layout["footer"].update(
         Panel(
