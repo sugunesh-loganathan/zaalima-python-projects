@@ -7,6 +7,8 @@ from app.reporting.cost_summary import create_cost_table
 from app.reporting.report_metadata import create_metadata_table
 from app.reporting.audit_status import create_audit_status
 from app.reporting.security_score import create_security_score
+from app.reporting.risk_summary import create_risk_summary
+from app.reporting.resource_summary import create_resource_summary
 
 
 def create_layout(scan_data):
@@ -32,6 +34,8 @@ def create_layout(scan_data):
         Layout(name="metadata", size=9),
         Layout(name="status", size=5),
         Layout(name="security", size=7),
+        Layout(name="risk", size=10),
+        Layout(name="resource", size=10),
         Layout(name="summary"),
         Layout(name="cost"),
     )
@@ -68,22 +72,44 @@ def create_layout(scan_data):
     # AUDIT STATUS
     # =========================
 
-    audit_status = create_audit_status(scan_data)
-
-    layout["status"].update(audit_status)
+    layout["status"].update(
+        create_audit_status(scan_data)
+    )
 
     # =========================
     # SECURITY SCORE
     # =========================
 
-    score = 87
-
-    security_panel = create_security_score(score)
-
-    layout["security"].update(security_panel)
+    layout["security"].update(
+        create_security_score(87)
+    )
 
     # =========================
-    # SUMMARY TABLE
+    # RISK SUMMARY
+    # =========================
+
+    layout["risk"].update(
+        create_risk_summary(scan_data)
+    )
+
+    # =========================
+    # RESOURCE SUMMARY
+    # =========================
+
+    resource_data = {
+        "EC2": 8,
+        "S3": 6,
+        "RDS": 3,
+        "Lambda": 5,
+        "IAM": 3,
+    }
+
+    layout["resource"].update(
+        create_resource_summary(resource_data)
+    )
+
+    # =========================
+    # SCAN SUMMARY
     # =========================
 
     summary_table = Table(
@@ -134,11 +160,9 @@ def create_layout(scan_data):
         "Lambda": 12,
     }
 
-    cost_table = create_cost_table(cost_data)
-
     layout["cost"].update(
         Panel(
-            cost_table,
+            create_cost_table(cost_data),
             title="Estimated Monthly Cost",
             border_style="green",
         )
@@ -154,7 +178,6 @@ def create_layout(scan_data):
         "🔴 Critical\n",
         style="bold red",
     )
-
     recommendation_text.append(
         "• Enable CloudTrail Logging\n\n"
     )
@@ -163,7 +186,6 @@ def create_layout(scan_data):
         "🟡 Warning\n",
         style="bold yellow",
     )
-
     recommendation_text.append(
         "• Remove Unused EBS Volumes\n\n"
     )
@@ -172,11 +194,9 @@ def create_layout(scan_data):
         "🟢 Recommendation\n",
         style="bold green",
     )
-
     recommendation_text.append(
         "• Enable S3 Versioning\n"
     )
-
     recommendation_text.append(
         "• Reduce EC2 Idle Instances"
     )
