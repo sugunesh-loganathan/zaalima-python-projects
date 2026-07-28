@@ -51,3 +51,33 @@ Install the required Python packages using:
 ```bash
 pip install -r requirements.txt
 
+## AWS Module Documentation
+
+### Overview
+
+The AWS module is responsible for AWS-related functionality in Project-2. It is located inside the `app/AWS/` directory.
+
+### Module Location
+
+```text
+Project-2/
+└── app/
+    └── AWS/
+        └── __init__.py
+
+### Purpose
+
+The AWS module provides a dedicated structure for implementing and managing AWS-related services and functionality in the project.
+
+### Current Status
+
+The AWS module currently contains the basic module initialization file:
+
+- `__init__.py` – Initializes the AWS Python package.
+
+Additional AWS functionality can be added to this module as the project develops.
+
+### Future Integration
+
+The AWS module can be extended to support AWS services required by the project, such as cloud storage or other AWS infrastructure services.
+
