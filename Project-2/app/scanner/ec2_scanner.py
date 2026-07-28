@@ -1,36 +1,44 @@
 """
-Base scanner for all AWS resource scanners.
+EC2 Scanner Module
 """
 
-import logging
+from botocore.exceptions import BotoCoreError, ClientError
 
-import boto3
+from .base import BaseScanner
+from .exceptions import ScannerException
 
 
-class BaseScanner:
-    """Base class for all AWS resource scanners."""
-
-    def __init__(self, region_name="us-east-1"):
-        """
-        Initialize AWS session and logger.
-        """
-        self.region_name = region_name
-        self.session = boto3.Session(region_name=region_name)
-
-        self.logger = logging.getLogger(self.__class__.__name__)
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-
-    def get_client(self, service_name):
-        """
-        Return a boto3 client for the requested AWS service.
-        """
-        return self.session.client(service_name)
+class EC2Scanner(BaseScanner):
+    """Scanner for EC2 resources."""
 
     def scan(self):
         """
-        Must be implemented by child scanner classes.
+        Scan EC2 instances and return standardized results.
         """
-        raise NotImplementedError("Subclasses must implement scan().")
+        try:
+            client = self.get_client("ec2")
+            response = client.describe_instances()
+
+            results = []
+
+            for reservation in response.get("Reservations", []):
+                for instance in reservation.get("Instances", []):
+
+                    results.append({
+                        "resource_type": "EC2",
+                        "resource_id": instance.get("InstanceId"),
+                        "status": instance.get("State", {}).get("Name"),
+                        "region": self.region_name,
+                        "details": {
+                            "instance_type": instance.get("InstanceType"),
+                            "public_ip": instance.get("PublicIpAddress"),
+                            "private_ip": instance.get("PrivateIpAddress")
+                        }
+                    })
+
+            self.logger.info("EC2 scan completed successfully.")
+            return results
+
+        except (ClientError, BotoCoreError) as error:
+            self.logger.error(f"EC2 scan failed: {error}")
+            raise ScannerException(str(error))
