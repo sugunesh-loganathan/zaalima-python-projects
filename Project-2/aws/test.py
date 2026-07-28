@@ -1,13 +1,13 @@
 from aws.auth import AWSAuth
+from aws.client_factory import AWSClientFactory
 
 auth = AWSAuth(
     profile_name="default",
     region_name="ap-south-1"
 )
 
-session = auth.create_session()
-print(session)
+factory = AWSClientFactory(auth)
 
-identity = auth.validate_credentials()
+ec2 = factory.get_client("ec2")
 
-print(identity)
+print(ec2)
