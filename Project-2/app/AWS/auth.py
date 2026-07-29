@@ -1,7 +1,9 @@
+from .session import AWSSession
+
 class AWSAuthenticator:
-    """
-    Handles AWS authentication.
-    """
+    
+    def __init__(self):
+        self.session = AWSSession()
 
     def authenticate(self):
-        pass
+        return self.session.create_session()
