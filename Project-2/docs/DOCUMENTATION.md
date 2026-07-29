@@ -81,3 +81,33 @@ Additional AWS functionality can be added to this module as the project develops
 
 The AWS module can be extended to support AWS services required by the project, such as cloud storage or other AWS infrastructure services.
 
+## Scanner Module Documentation
+
+### Overview
+
+The Scanner module is a component of Project-2 responsible for scanner-related functionality. It is located inside the `app/scanner/` directory.
+
+### Module Location
+
+```text
+Project-2/
+└── app/
+    └── scanner/
+        └── __init__.py
+
+### Purpose
+
+The Scanner module provides a dedicated structure for implementing and managing scanner-related functionality in the project.
+
+### Current Status
+
+The Scanner module currently contains the basic module initialization file:
+
+- `__init__.py` – Initializes the Scanner Python package.
+
+Additional scanner functionality can be added to this module as the project develops.
+
+### Future Integration
+
+The Scanner module can be extended with scanner-related features required by the project. Additional implementation details, configuration requirements, and usage instructions should be documented as new functionality is added.
+
