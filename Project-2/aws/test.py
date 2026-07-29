@@ -1,5 +1,7 @@
 from aws.auth import AWSAuth
 from aws.client_factory import AWSClientFactory
+from aws.ec2 import EC2Service
+
 
 auth = AWSAuth(
     profile_name="default",
@@ -8,6 +10,9 @@ auth = AWSAuth(
 
 factory = AWSClientFactory(auth)
 
-ec2 = factory.get_client("ec2")
+ec2 = EC2Service(factory)
 
-print(ec2)
+instances = ec2.list_instances()
+
+for instance in instances:
+    print(instance)
