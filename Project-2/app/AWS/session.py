@@ -1,6 +1,7 @@
-class AWSSession:
-    """
-    Creates and manages AWS sessions.
-    """
+import boto3
 
-    pass
+class AWSSession:
+
+    def create_session(self):
+        return boto3.Session()
+            
