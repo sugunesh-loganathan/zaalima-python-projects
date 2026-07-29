@@ -9,6 +9,7 @@ from app.reporting.audit_status import create_audit_status
 from app.reporting.security_score import create_security_score
 from app.reporting.risk_summary import create_risk_summary
 from app.reporting.resource_summary import create_resource_summary
+from app.reporting.report_statistics import create_report_statistics
 
 
 def create_layout(scan_data):
@@ -36,6 +37,7 @@ def create_layout(scan_data):
         Layout(name="security", size=7),
         Layout(name="risk", size=10),
         Layout(name="resource", size=10),
+        Layout(name="statistics", size=10),
         Layout(name="summary"),
         Layout(name="cost"),
     )
@@ -58,11 +60,9 @@ def create_layout(scan_data):
     # REPORT INFORMATION
     # =========================
 
-    metadata_table = create_metadata_table()
-
     layout["metadata"].update(
         Panel(
-            metadata_table,
+            create_metadata_table(),
             title="Report Information",
             border_style="magenta",
         )
@@ -109,6 +109,14 @@ def create_layout(scan_data):
     )
 
     # =========================
+    # REPORT STATISTICS
+    # =========================
+
+    layout["statistics"].update(
+        create_report_statistics()
+    )
+
+    # =========================
     # SCAN SUMMARY
     # =========================
 
@@ -121,25 +129,10 @@ def create_layout(scan_data):
     summary_table.add_column("Metric")
     summary_table.add_column("Value", justify="center")
 
-    summary_table.add_row(
-        "Total Resources",
-        str(scan_data["total_resources"])
-    )
-
-    summary_table.add_row(
-        "Passed",
-        str(scan_data["passed"])
-    )
-
-    summary_table.add_row(
-        "Warnings",
-        str(scan_data["warnings"])
-    )
-
-    summary_table.add_row(
-        "Critical",
-        str(scan_data["critical"])
-    )
+    summary_table.add_row("Total Resources", str(scan_data["total_resources"]))
+    summary_table.add_row("Passed", str(scan_data["passed"]))
+    summary_table.add_row("Warnings", str(scan_data["warnings"]))
+    summary_table.add_row("Critical", str(scan_data["critical"]))
 
     layout["summary"].update(
         Panel(
@@ -174,32 +167,15 @@ def create_layout(scan_data):
 
     recommendation_text = Text()
 
-    recommendation_text.append(
-        "🔴 Critical\n",
-        style="bold red",
-    )
-    recommendation_text.append(
-        "• Enable CloudTrail Logging\n\n"
-    )
+    recommendation_text.append("🔴 Critical\n", style="bold red")
+    recommendation_text.append("• Enable CloudTrail Logging\n\n")
 
-    recommendation_text.append(
-        "🟡 Warning\n",
-        style="bold yellow",
-    )
-    recommendation_text.append(
-        "• Remove Unused EBS Volumes\n\n"
-    )
+    recommendation_text.append("🟡 Warning\n", style="bold yellow")
+    recommendation_text.append("• Remove Unused EBS Volumes\n\n")
 
-    recommendation_text.append(
-        "🟢 Recommendation\n",
-        style="bold green",
-    )
-    recommendation_text.append(
-        "• Enable S3 Versioning\n"
-    )
-    recommendation_text.append(
-        "• Reduce EC2 Idle Instances"
-    )
+    recommendation_text.append("🟢 Recommendation\n", style="bold green")
+    recommendation_text.append("• Enable S3 Versioning\n")
+    recommendation_text.append("• Reduce EC2 Idle Instances")
 
     layout["right"].update(
         Panel(

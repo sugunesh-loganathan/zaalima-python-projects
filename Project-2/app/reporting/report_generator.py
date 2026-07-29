@@ -1,12 +1,25 @@
-from app.reporting.exports.json_export import export_json
+"""
+Report Generator Module
+
+This module prepares the scan data and generates
+the final Rich terminal report.
+"""
+
 from rich.console import Console
 from app.reporting.layout import create_layout
-from app.reporting.exports.csv_export import export_csv
 
 console = Console()
 
 
 def generate_report():
+    """
+    Generate the terminal report.
+
+    This function prepares sample scan data,
+    creates the dashboard layout and prints
+    the report to the terminal.
+    """
+
     scan_data = {
         "total_resources": 25,
         "passed": 18,
@@ -21,7 +34,5 @@ def generate_report():
     }
 
     layout = create_layout(scan_data)
-    console.print(layout)
 
-    export_csv(scan_data)
-    export_json(scan_data)
+    console.print(layout)
