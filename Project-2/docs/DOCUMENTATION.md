@@ -111,3 +111,44 @@ Additional scanner functionality can be added to this module as the project deve
 
 The Scanner module can be extended with scanner-related features required by the project. Additional implementation details, configuration requirements, and usage instructions should be documented as new functionality is added.
 
+## CLI Commands Documentation
+
+### Overview
+
+Project-2 uses a Command-Line Interface (CLI) to interact with the application.
+
+The CLI allows users to run the application and execute available project commands from the terminal.
+
+### Running the Application
+
+To run the Project-2 application, open a terminal in the Project-2 directory and use:
+
+```bash
+python app/main.py
+
+### Installing Dependencies
+
+Before running the application, install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+
+```markdown
+### Checking Python Version
+
+To check the installed Python version:
+
+```bash
+python --version```
+### Available Commands
+
+Currently, the project provides a basic CLI command for initializing the application.
+
+Additional CLI commands will be documented as they are implemented.
+
+### Notes
+
+- Run commands from the Project-2 directory.
+- Make sure the required dependencies are installed.
+- Use a virtual environment when working with the project.
+
