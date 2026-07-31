@@ -152,3 +152,25 @@ Additional CLI commands will be documented as they are implemented.
 - Make sure the required dependencies are installed.
 - Use a virtual environment when working with the project.
 
+## Documentation Reference
+
+This section provides a central reference to the available Project-2 documentation.
+
+### Project Documentation
+
+- `README.md` – Project overview and basic information.
+- `docs/DOCUMENTATION.md` – Main documentation reference.
+- `docs/ARCHITECTURE.md` – Project architecture and folder structure.
+- `docs/TROUBLESHOOTING.md` – Common issues and troubleshooting information.
+- `docs/CONTRIBUTING.md` – Contribution guidelines.
+
+### Technical Documentation
+
+- AWS Module Documentation – Describes the AWS module structure and current status.
+- Scanner Module Documentation – Describes the Scanner module structure and current status.
+- CLI Commands Documentation – Lists the documented commands used with Project-2.
+
+### Documentation Maintenance
+
+Documentation should be updated whenever new project features, modules, commands, configuration requirements, or troubleshooting information are added.
+
