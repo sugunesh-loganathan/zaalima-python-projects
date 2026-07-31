@@ -1,11 +1,11 @@
 """
 Report Generator Module
 
-This module prepares the scan data and generates
-the final Rich terminal report.
+Generates the Rich terminal report.
 """
 
 from rich.console import Console
+
 from app.reporting.layout import create_layout
 
 console = Console()
@@ -13,26 +13,40 @@ console = Console()
 
 def generate_report():
     """
-    Generate the terminal report.
-
-    This function prepares sample scan data,
-    creates the dashboard layout and prints
-    the report to the terminal.
+    Generate the cloud audit report.
     """
 
-    scan_data = {
-        "total_resources": 25,
-        "passed": 18,
-        "warnings": 5,
-        "critical": 2,
-        "recommendations": [
-            "Enable S3 Versioning",
-            "Remove Unused EBS Volumes",
-            "Enable CloudTrail Logging",
-            "Reduce EC2 Idle Instances",
-        ],
-    }
+    try:
+        scan_data = {
+            "total_resources": 25,
+            "passed": 18,
+            "warnings": 5,
+            "critical": 2,
+            "recommendations": [
+                "Enable S3 Versioning",
+                "Remove Unused EBS Volumes",
+                "Enable CloudTrail Logging",
+                "Reduce EC2 Idle Instances",
+            ],
+        }
 
-    layout = create_layout(scan_data)
+        required_keys = [
+            "total_resources",
+            "passed",
+            "warnings",
+            "critical",
+            "recommendations",
+        ]
 
-    console.print(layout)
+        for key in required_keys:
+            if key not in scan_data:
+                raise ValueError(f"Missing required field: {key}")
+
+        layout = create_layout(scan_data)
+
+        console.print(layout)
+
+    except Exception as error:
+        console.print(
+            f"[bold red]Report generation failed:[/bold red] {error}"
+        )
