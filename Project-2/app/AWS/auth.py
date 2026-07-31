@@ -1,3 +1,4 @@
+from app.utils import logger
 import boto3
 from botocore.exceptions import (
     NoCredentialsError,
@@ -17,6 +18,7 @@ class AWSAuthenticator:
         """
         Verify AWS credentials.
         """
+        logger.info("Starting AWS authentication...")
 
         try:
             session = self.session_manager.create_session()
@@ -25,6 +27,8 @@ class AWSAuthenticator:
 
             identity = sts.get_caller_identity()
 
+            logger.info("AWS credentials verified successfully.")
+
             return {
                 "success": True,
                 "account": identity["Account"],
@@ -32,25 +36,34 @@ class AWSAuthenticator:
             }
 
         except NoCredentialsError:
+
+            logger.error("AWS credentials not found.")
+
             return {
                 "success": False,
                 "message": "AWS credentials not found.",
             }
 
         except PartialCredentialsError:
-            return {
-                "success": False,
-                "message": "Incomplete AWS credentials.",
-            }
+                logger.error("Incomplete AWS credentials.")
+
+                return {
+                    "success": False,
+                    "message": "Incomplete AWS credentials.",
+                }
 
         except ClientError as e:
-            return {
-                "success": False,
-                "message": str(e),
-            }
+                logger.error(f"AWS Client Error: {e}")
+                
+                return {
+                    "success": False,
+                    "message": str(e),
+                }
 
         except Exception as e:
-            return {
-                "success": False,
-                "message": str(e),
-            }
+                logger.error(f"Unexpected Error: {e}")
+
+                return {
+                    "success": False,
+                    "message": str(e),
+                }
