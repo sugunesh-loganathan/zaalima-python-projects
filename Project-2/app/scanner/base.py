@@ -29,6 +29,24 @@ class BaseScanner:
         """
         return self.session.client(service_name)
 
+    def create_result(
+        self,
+        resource_type,
+        resource_id,
+        status,
+        details=None
+    ):
+        """
+        Create a standardized scanner result.
+        """
+        return {
+            "resource_type": resource_type,
+            "resource_id": resource_id,
+            "status": status,
+            "region": self.region_name,
+            "details": details or {},
+        }
+
     def scan(self):
         """
         Must be implemented by child scanner classes.
