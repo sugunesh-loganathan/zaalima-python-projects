@@ -1,4 +1,4 @@
-from app.scanner.base_scanner import BaseScanner
+from app.scanner.base_scanner import BaseScannerfr
 
 
 class IAMScanner(BaseScanner):
