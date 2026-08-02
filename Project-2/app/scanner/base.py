@@ -5,6 +5,19 @@ Base scanner for all AWS resource scanners.
 import logging
 
 import boto3
+from botocore.exceptions import (
+    BotoCoreError,
+    ClientError,
+    NoCredentialsError,
+    PartialCredentialsError,
+)
+
+from .exceptions import (
+    AuthenticationError,
+    PermissionError,
+    RateLimitError,
+    ResourceScanError,
+)
 
 
 class BaseScanner:
@@ -47,8 +60,55 @@ class BaseScanner:
             "details": details or {},
         }
 
+    def handle_aws_error(self, error):
+        """
+        Convert AWS API errors into scanner-specific exceptions.
+        """
+        if isinstance(error, (NoCredentialsError, PartialCredentialsError)):
+            raise AuthenticationError(
+                "AWS credentials are missing or incomplete."
+            ) from error
+
+        if isinstance(error, ClientError):
+            error_code = error.response.get(
+                "Error", {}
+            ).get("Code", "Unknown")
+
+            if error_code in (
+                "AccessDenied",
+                "AccessDeniedException",
+                "UnauthorizedOperation",
+            ):
+                raise PermissionError(
+                    f"AWS permission denied: {error_code}"
+                ) from error
+
+            if error_code in (
+                "Throttling",
+                "ThrottlingException",
+                "RequestLimitExceeded",
+            ):
+                raise RateLimitError(
+                    f"AWS API rate limit exceeded: {error_code}"
+                ) from error
+
+            raise ResourceScanError(
+                f"AWS API error: {error_code}"
+            ) from error
+
+        if isinstance(error, BotoCoreError):
+            raise ResourceScanError(
+                f"AWS SDK error: {error}"
+            ) from error
+
+        raise ResourceScanError(
+            f"Unexpected scanner error: {error}"
+        ) from error
+
     def scan(self):
         """
         Must be implemented by child scanner classes.
         """
-        raise NotImplementedError("Subclasses must implement scan().")
+        raise NotImplementedError(
+            "Subclasses must implement scan()."
+        )
