@@ -19,11 +19,6 @@ app.add_typer(cleanup.app, name="cleanup")
 app.add_typer(version.app, name="version")
 
 
-@app.command()
-def scan():
-    """Scan AWS infrastructure."""
-    logger.info("Configuration Loaded Successfully")
-    logger.info("Starting cloud infrastructure scan...")
 
 if __name__ == "__main__":
     app()
