@@ -3,10 +3,6 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from rich.layout import Layout
-from rich.table import Table
-from rich.text import Text
-
 from app.reporting.panel_factory import create_panel
 from app.reporting.cost_summary import create_cost_table
 from app.reporting.report_metadata import create_metadata_table
@@ -66,12 +62,14 @@ def create_layout(scan_data):
     # =========================
 
     layout["metadata"].update(
-        create_panel(
-            create_metadata_table(),
-            title="Report Information",
-            border_style="magenta",
-        )
+    create_panel(
+        create_metadata_table(
+            scan_data.get("generation_time", 0.0)
+        ),
+        title="Report Information",
+        border_style="magenta",
     )
+)
 
     # =========================
     # AUDIT STATUS

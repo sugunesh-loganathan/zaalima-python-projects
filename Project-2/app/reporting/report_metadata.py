@@ -9,7 +9,7 @@ from app.reporting.config import (
 )
 
 
-def create_metadata_table():
+def create_metadata_table(generation_time=0.0):
     table = Table(show_header=False, expand=True)
 
     table.add_column("Field", style="bold cyan")
@@ -20,5 +20,6 @@ def create_metadata_table():
     table.add_row("Cloud Provider", CLOUD_PROVIDER)
     table.add_row("Auditor", AUDITOR)
     table.add_row("Security Score", f"{SECURITY_SCORE}%")
+    table.add_row("Generation Time", f"{generation_time:.4f} sec")
 
     return table
