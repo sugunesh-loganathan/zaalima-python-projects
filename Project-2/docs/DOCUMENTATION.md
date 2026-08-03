@@ -174,3 +174,19 @@ This section provides a central reference to the available Project-2 documentati
 
 Documentation should be updated whenever new project features, modules, commands, configuration requirements, or troubleshooting information are added.
 
+## Documentation Review
+
+The Project-2 documentation has been reviewed for consistency and completeness.
+
+The documentation currently covers:
+
+- Project overview and setup instructions
+- Project architecture and folder structure
+- AWS module
+- Scanner module
+- CLI commands
+- Troubleshooting information
+- Contribution guidelines
+
+Documentation will be updated as new project features and modules are implemented.
+
