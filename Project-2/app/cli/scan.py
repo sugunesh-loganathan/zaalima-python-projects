@@ -15,6 +15,11 @@ def run():
 
     scanner = EC2Scanner()
 
-    scanner.scan()
+    result = scanner.scan()
+
+    logger.info(f"Service : {result['service']}")
+    logger.info(f"Status  : {result['status']}")
+    logger.info(f"Resources Found : {result['resources_found']}")
+    logger.info(result["message"])
 
     logger.info("Infrastructure scan completed.")
