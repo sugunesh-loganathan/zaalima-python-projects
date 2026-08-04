@@ -3,7 +3,7 @@ from botocore.exceptions import ClientError
 from aws.client_factory import AWSClientFactory
 from aws.exceptions import AWSAuthenticationError
 from utils.logger import logger
-
+from aws.pagination import AWSPaginator
 
 class EC2Service:
 
@@ -14,15 +14,22 @@ class EC2Service:
 
         try:
 
-            response = self.client.describe_instances()
+            paginator = AWSPaginator(self.client)
+
+            pages = paginator.paginate("describe_instances")
+
+            reservations = []
+
+            for page in pages:
+                reservations.extend(page["Reservations"])
 
             logger.info("EC2 instances fetched successfully.")
 
-            return response
+            return {"Reservations": reservations}
 
         except ClientError as e:
 
-            logger.error(e)
+            logger.error(f"Failed to fetch EC2 instances: {e}")
 
             raise AWSAuthenticationError(str(e))
 
