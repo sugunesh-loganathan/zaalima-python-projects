@@ -1,4 +1,5 @@
 from app.scanner.base_scanner import BaseScanner
+from app.models.scan_result import ScanResult
 
 
 class EC2Scanner(BaseScanner):
@@ -8,9 +9,11 @@ class EC2Scanner(BaseScanner):
         Simulate scanning EC2 instances.
         """
 
-        return {
-            "service": "EC2",
-            "status": "success",
-            "resources_found": 0,
-            "message": "No EC2 instances found."
-        }
+        result = ScanResult(
+            service="EC2",
+            status="success",
+            resources_found=0,
+            message="No EC2 instances found."
+        )
+
+        return result.to_dict()

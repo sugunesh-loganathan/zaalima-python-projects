@@ -5,6 +5,7 @@ from app.scanner.ec2_scanner import EC2Scanner
 
 app = typer.Typer()
 
+
 @app.command()
 def run():
     """
@@ -17,9 +18,9 @@ def run():
 
     result = scanner.scan()
 
-    logger.info(f"Service : {result['service']}")
-    logger.info(f"Status  : {result['status']}")
-    logger.info(f"Resources Found : {result['resources_found']}")
-    logger.info(result["message"])
+    logger.info(f"Service          : {result['service']}")
+    logger.info(f"Status           : {result['status']}")
+    logger.info(f"Resources Found  : {result['resources_found']}")
+    logger.info(f"Message          : {result['message']}")
 
     logger.info("Infrastructure scan completed.")
