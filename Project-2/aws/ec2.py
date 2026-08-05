@@ -4,12 +4,13 @@ from aws.client_factory import AWSClientFactory
 from aws.exceptions import AWSAuthenticationError
 from utils.logger import logger
 from aws.pagination import AWSPaginator
+from utils.retry import aws_retry
 
 class EC2Service:
 
     def __init__(self, client_factory):
         self.client = client_factory.get_client("ec2")
-
+    @aws_retry()
     def get_instances(self):
 
         try:

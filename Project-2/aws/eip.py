@@ -2,7 +2,9 @@ from botocore.exceptions import ClientError
 
 from aws.client_factory import AWSClientFactory
 from aws.exceptions import AWSAuthenticationError
+from aws.pagination import AWSPaginator
 from utils.logger import logger
+from utils.retry import aws_retry
 
 
 class ElasticIPService:
@@ -35,27 +37,18 @@ class ElasticIPService:
         """
         Return simplified Elastic IP details.
         """
-
         addresses = []
 
         response = self.get_addresses()
 
         for address in response["Addresses"]:
-
             addresses.append({
-
                 "AllocationId": address.get("AllocationId"),
-
                 "PublicIp": address.get("PublicIp"),
-
                 "PrivateIp": address.get("PrivateIpAddress"),
-
                 "InstanceId": address.get("InstanceId"),
-
                 "AssociationId": address.get("AssociationId"),
-
                 "Domain": address.get("Domain")
-
             })
 
         return addresses
@@ -64,7 +57,6 @@ class ElasticIPService:
         """
         Return Elastic IPs not associated with any EC2 instance.
         """
-
         if addresses is None:
             addresses = self.list_addresses()
 
@@ -73,3 +65,5 @@ class ElasticIPService:
             for address in addresses
             if address["InstanceId"] is None
         ]
+
+    

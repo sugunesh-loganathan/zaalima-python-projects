@@ -93,8 +93,7 @@
 # CLUDWATCH
 from aws.auth import AWSAuth
 from aws.client_factory import AWSClientFactory
-from aws.cloudwatch import CloudWatchService
-from aws.ec2 import EC2Service
+from aws.eip import ElasticIPService
 
 auth = AWSAuth(
     profile_name="default",
@@ -103,20 +102,26 @@ auth = AWSAuth(
 
 factory = AWSClientFactory(auth)
 
-ec2 = EC2Service(factory)
+eip = ElasticIPService(factory)
 
-instances = ec2.list_instances()
+# Pagination internally handle hogi
+addresses = eip.list_addresses()
 
-if not instances:
-    print("No EC2 instances found.")
+if not addresses:
+    print("No Elastic IPs found.")
 else:
+    print(f"Total Elastic IPs: {len(addresses)}")
+    print()
 
-    cloudwatch = CloudWatchService(factory)
+    for address in addresses:
+        print(address)
 
-    for instance in instances:
+print("\nUnassociated Elastic IPs:")
 
-        cpu = cloudwatch.get_average_cpu(
-            instance["InstanceId"]
-        )
+unused = eip.get_unassociated_addresses(addresses)
 
-        print(instance["InstanceId"], cpu)
+if not unused:
+    print("No unassociated Elastic IPs found.")
+else:
+    for address in unused:
+        print(address)

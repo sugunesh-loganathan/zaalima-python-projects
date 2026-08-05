@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError
 from aws.client_factory import AWSClientFactory
 from aws.exceptions import AWSAuthenticationError
 from utils.logger import logger
-
+from utils.retry import aws_retry
 
 class CloudWatchService:
     """
@@ -14,7 +14,7 @@ class CloudWatchService:
 
     def __init__(self, client_factory: AWSClientFactory):
         self.client = client_factory.get_client("cloudwatch")
-
+    @aws_retry()
     def get_cpu_utilization(self, instance_id):
 
         try:
