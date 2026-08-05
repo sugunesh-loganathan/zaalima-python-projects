@@ -23,4 +23,11 @@ def run():
     logger.info(f"Resources Found  : {result['resources_found']}")
     logger.info(f"Message          : {result['message']}")
 
+    for instance in result["instances"]:
+        logger.info(
+            f"Instance: {instance['instance_id']} | "
+            f"State: {instance['state']} | "
+            f"Type: {instance['type']}"
+        )
+
     logger.info("Infrastructure scan completed.")
