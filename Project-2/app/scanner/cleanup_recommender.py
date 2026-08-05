@@ -27,6 +27,23 @@ class CleanupRecommender(BaseScanner):
 
         return False
 
+    def is_idle_resource(self, resource):
+        """
+        Check whether an EC2 resource has low CPU utilization.
+        """
+        resource_type = resource.get("resource_type")
+        details = resource.get("details", {})
+
+        if resource_type != "CloudWatch":
+            return False
+
+        average_cpu = details.get("average_cpu_percent")
+
+        if average_cpu is None:
+            return False
+
+        return average_cpu < 5
+
     def recommend(self, scan_results):
         """
         Generate cleanup recommendations for scanned resources.
@@ -35,22 +52,31 @@ class CleanupRecommender(BaseScanner):
 
         for resource in scan_results:
             unused = self.is_unused_resource(resource)
+            idle = self.is_idle_resource(resource)
+
+            if unused:
+                recommendation_text = "Review resource for cleanup"
+
+            elif idle:
+                recommendation_text = (
+                    "Review idle EC2 instance for optimization"
+                )
+
+            else:
+                recommendation_text = "No action required"
 
             recommendation = {
                 "resource_type": resource.get("resource_type"),
                 "resource_id": resource.get("resource_id"),
                 "unused": unused,
-                "recommendation": (
-                    "Review resource for cleanup"
-                    if unused
-                    else "No action required"
-                ),
+                "idle": idle,
+                "recommendation": recommendation_text,
             }
 
             recommendations.append(recommendation)
 
         self.logger.info(
-            "Unused resource detection completed."
+            "Cleanup recommendations generated successfully."
         )
 
         return recommendations
