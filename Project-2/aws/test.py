@@ -91,37 +91,103 @@
 #         print(address)
 
 # CLUDWATCH
+# from aws.auth import AWSAuth
+# from aws.client_factory import AWSClientFactory
+# from aws.eip import ElasticIPService
+
+# auth = AWSAuth(
+#     profile_name="default",
+#     region_name="ap-south-1"
+# )
+
+# factory = AWSClientFactory(auth)
+
+# eip = ElasticIPService(factory)
+
+# # Pagination internally handle hogi
+# addresses = eip.list_addresses()
+
+# if not addresses:
+#     print("No Elastic IPs found.")
+# else:
+#     print(f"Total Elastic IPs: {len(addresses)}")
+#     print()
+
+#     for address in addresses:
+#         print(address)
+
+# print("\nUnassociated Elastic IPs:")
+
+# unused = eip.get_unassociated_addresses(addresses)
+
+# if not unused:
+#     print("No unassociated Elastic IPs found.")
+# else:
+#     for address in unused:
+#         print(address)
+
+
+
 from aws.auth import AWSAuth
 from aws.client_factory import AWSClientFactory
+from aws.ec2 import EC2Service
+from aws.ebs import EBSService
 from aws.eip import ElasticIPService
 
-auth = AWSAuth(
-    profile_name="default",
-    region_name="ap-south-1"
-)
 
-factory = AWSClientFactory(auth)
+def main():
 
-eip = ElasticIPService(factory)
+    auth = AWSAuth(
+        profile_name="default",
+        region_name="ap-south-1"
+    )
 
-# Pagination internally handle hogi
-addresses = eip.list_addresses()
+    factory = AWSClientFactory(auth)
 
-if not addresses:
-    print("No Elastic IPs found.")
-else:
-    print(f"Total Elastic IPs: {len(addresses)}")
-    print()
+    print("=" * 50)
+    print("AWS MODULE INTEGRATION TEST")
+    print("=" * 50)
 
-    for address in addresses:
-        print(address)
+    # ---------------- EC2 ---------------- #
 
-print("\nUnassociated Elastic IPs:")
+    print("\nEC2")
 
-unused = eip.get_unassociated_addresses(addresses)
+    ec2 = EC2Service(factory)
 
-if not unused:
-    print("No unassociated Elastic IPs found.")
-else:
-    for address in unused:
-        print(address)
+    instances = ec2.list_instances()
+
+    print(f"Instances Found: {len(instances)}")
+
+    # ---------------- EBS ---------------- #
+
+    print("\nEBS")
+
+    ebs = EBSService(factory)
+
+    volumes = ebs.list_volumes()
+
+    print(f"Volumes Found: {len(volumes)}")
+
+    print(
+        f"Unattached Volumes: {len(ebs.get_unattached_volumes(volumes))}"
+    )
+
+    # ---------------- Elastic IP ---------------- #
+
+    print("\nElastic IP")
+
+    eip = ElasticIPService(factory)
+
+    addresses = eip.list_addresses()
+
+    print(f"Elastic IPs Found: {len(addresses)}")
+
+    print(
+        f"Unassociated Elastic IPs: {len(eip.get_unassociated_addresses(addresses))}"
+    )
+
+    print("\nAll AWS services are working successfully.")
+
+
+if __name__ == "__main__":
+    main()
