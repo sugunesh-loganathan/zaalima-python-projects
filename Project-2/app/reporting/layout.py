@@ -6,6 +6,7 @@ from rich.text import Text
 from app.reporting.scan_details import create_scan_details
 from app.reporting.report_health import create_report_health
 from app.reporting.report_version import create_report_version
+from app.reporting.system_information import create_system_information
 from app.reporting.panel_factory import create_panel
 from app.reporting.cost_summary import create_cost_table
 from app.reporting.report_metadata import create_metadata_table
@@ -39,6 +40,7 @@ def create_layout(scan_data):
         Layout(name="metadata", size=9),
         Layout(name="scan", size=8),
         Layout(name="version", size=8),
+        Layout(name="system", size=8),
         Layout(name="health", size=5),
         Layout(name="status", size=5),
         Layout(name="security", size=7),
@@ -91,6 +93,14 @@ def create_layout(scan_data):
 
     layout["version"].update(
         create_report_version()
+    )
+
+    # =========================
+    # SYSTEM INFORMATION
+    # =========================
+
+    layout["system"].update(
+        create_system_information()
     )
 
     # =========================
