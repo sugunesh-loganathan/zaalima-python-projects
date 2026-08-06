@@ -1,7 +1,7 @@
 import typer
 
 from app.utils import logger
-from app.scanner.ec2_scanner import EC2Scanner
+from app.scanner.scanner_manager import ScannerManager
 
 app = typer.Typer()
 
@@ -14,20 +14,23 @@ def run():
 
     logger.info("Starting infrastructure scan...")
 
-    scanner = EC2Scanner()
+    manager = ScannerManager()
 
-    result = scanner.scan()
+    results = manager.scan_all()
 
-    logger.info(f"Service          : {result['service']}")
-    logger.info(f"Status           : {result['status']}")
-    logger.info(f"Resources Found  : {result['resources_found']}")
-    logger.info(f"Message          : {result['message']}")
+    for result in results:
 
-    for instance in result["instances"]:
-        logger.info(
-            f"Instance: {instance['instance_id']} | "
-            f"State: {instance['state']} | "
-            f"Type: {instance['type']}"
-        )
+        logger.info(f"Service          : {result['service']}")
+        logger.info(f"Status           : {result['status']}")
+        logger.info(f"Resources Found  : {result['resources_found']}")
+        logger.info(f"Message          : {result['message']}")
+
+        if "instances" in result:
+            for instance in result["instances"]:
+                logger.info(
+                    f"Instance: {instance['instance_id']} | "
+                    f"State: {instance['state']} | "
+                    f"Type: {instance['type']}"
+                )
 
     logger.info("Infrastructure scan completed.")
