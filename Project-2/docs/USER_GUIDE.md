@@ -18,6 +18,7 @@ Install the required dependencies using:
 
 ```bash
 pip install -r requirements.txt
+```
 
 ## Running the Application
 
@@ -25,6 +26,7 @@ Open a terminal in the Project-2 directory and run:
 
 ```bash
 python app/main.py
+```
 
 ## Using the Application
 
@@ -38,7 +40,25 @@ Run the application using:
 
 ```bash
 python app/main.py
+```
+
 The application will initialize the Project-2 CLI.
+
+### Example Output
+
+When the application starts successfully, it displays:
+
+```text
+Cloud Infrastructure Auditor CLI Initialized
+```
+### Command Summary
+
+| Command | Purpose |
+|---|---|
+| `python app/main.py` | Starts the Project-2 CLI application |
+| `python --version` | Checks the installed Python version |
+| `pip install -r requirements.txt` | Installs the required project dependencies |
+
 ## Troubleshooting
 
 If the application does not start:
