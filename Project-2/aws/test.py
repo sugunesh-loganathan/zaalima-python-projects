@@ -128,11 +128,73 @@
 
 
 
+# from aws.auth import AWSAuth
+# from aws.client_factory import AWSClientFactory
+# from aws.ec2 import EC2Service
+# from aws.ebs import EBSService
+# from aws.eip import ElasticIPService
+
+
+# def main():
+
+#     auth = AWSAuth(
+#         profile_name="default",
+#         region_name="ap-south-1"
+#     )
+
+#     factory = AWSClientFactory(auth)
+
+#     print("=" * 50)
+#     print("AWS MODULE INTEGRATION TEST")
+#     print("=" * 50)
+
+#     # ---------------- EC2 ---------------- #
+
+#     print("\nEC2")
+
+#     ec2 = EC2Service(factory)
+
+#     instances = ec2.list_instances()
+
+#     print(f"Instances Found: {len(instances)}")
+
+#     # ---------------- EBS ---------------- #
+
+#     print("\nEBS")
+
+#     ebs = EBSService(factory)
+
+#     volumes = ebs.list_volumes()
+
+#     print(f"Volumes Found: {len(volumes)}")
+
+#     print(
+#         f"Unattached Volumes: {len(ebs.get_unattached_volumes(volumes))}"
+#     )
+
+#     # ---------------- Elastic IP ---------------- #
+
+#     print("\nElastic IP")
+
+#     eip = ElasticIPService(factory)
+
+#     addresses = eip.list_addresses()
+
+#     print(f"Elastic IPs Found: {len(addresses)}")
+
+#     print(
+#         f"Unassociated Elastic IPs: {len(eip.get_unassociated_addresses(addresses))}"
+#     )
+
+#     print("\nAll AWS services are working successfully.")
+
+
+# if __name__ == "__main__":
+#     main()
+
 from aws.auth import AWSAuth
 from aws.client_factory import AWSClientFactory
-from aws.ec2 import EC2Service
-from aws.ebs import EBSService
-from aws.eip import ElasticIPService
+from aws.cleanup import CleanupService
 
 
 def main():
@@ -144,49 +206,19 @@ def main():
 
     factory = AWSClientFactory(auth)
 
+    cleanup = CleanupService(factory)
+
     print("=" * 50)
-    print("AWS MODULE INTEGRATION TEST")
+    print("Cleanup Module Test")
     print("=" * 50)
 
-    # ---------------- EC2 ---------------- #
+    unused_volumes = cleanup.get_unused_volumes()
 
-    print("\nEC2")
+    print(f"Unused Volumes : {len(unused_volumes)}")
 
-    ec2 = EC2Service(factory)
+    unused_eips = cleanup.get_unused_elastic_ips()
 
-    instances = ec2.list_instances()
-
-    print(f"Instances Found: {len(instances)}")
-
-    # ---------------- EBS ---------------- #
-
-    print("\nEBS")
-
-    ebs = EBSService(factory)
-
-    volumes = ebs.list_volumes()
-
-    print(f"Volumes Found: {len(volumes)}")
-
-    print(
-        f"Unattached Volumes: {len(ebs.get_unattached_volumes(volumes))}"
-    )
-
-    # ---------------- Elastic IP ---------------- #
-
-    print("\nElastic IP")
-
-    eip = ElasticIPService(factory)
-
-    addresses = eip.list_addresses()
-
-    print(f"Elastic IPs Found: {len(addresses)}")
-
-    print(
-        f"Unassociated Elastic IPs: {len(eip.get_unassociated_addresses(addresses))}"
-    )
-
-    print("\nAll AWS services are working successfully.")
+    print(f"Unused Elastic IPs : {len(unused_eips)}")
 
 
 if __name__ == "__main__":
