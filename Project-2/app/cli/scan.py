@@ -26,11 +26,14 @@ def run():
         logger.info(f"Message          : {result['message']}")
 
         if "instances" in result:
+
             for instance in result["instances"]:
-                logger.info(
-                    f"Instance: {instance['instance_id']} | "
-                    f"State: {instance['state']} | "
-                    f"Type: {instance['type']}"
-                )
+
+                logger.info(f"Instance ID      : {instance['instance_id']}")
+                logger.info(f"State            : {instance['state']}")
+                logger.info(f"Instance Type    : {instance['type']}")
+                logger.info(f"CPU Utilization  : {instance['cpu_utilization']}%")
+                logger.info(f"Recommendation   : {instance['recommendation']}")
+                logger.info("-" * 50)
 
     logger.info("Infrastructure scan completed.")
