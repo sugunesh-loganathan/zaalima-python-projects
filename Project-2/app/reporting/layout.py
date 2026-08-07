@@ -7,6 +7,7 @@ from app.reporting.scan_details import create_scan_details
 from app.reporting.report_health import create_report_health
 from app.reporting.report_version import create_report_version
 from app.reporting.system_information import create_system_information
+from app.reporting.cost_optimization import create_cost_optimization
 from app.reporting.panel_factory import create_panel
 from app.reporting.cost_summary import create_cost_table
 from app.reporting.report_metadata import create_metadata_table
@@ -49,6 +50,7 @@ def create_layout(scan_data):
         Layout(name="statistics", size=10),
         Layout(name="summary"),
         Layout(name="cost"),
+        Layout(name="optimization", size=9),
     )
 
     # =========================
@@ -172,10 +174,25 @@ def create_layout(scan_data):
     summary_table.add_column("Metric")
     summary_table.add_column("Value", justify="center")
 
-    summary_table.add_row("Total Resources", str(scan_data["total_resources"]))
-    summary_table.add_row("Passed", str(scan_data["passed"]))
-    summary_table.add_row("Warnings", str(scan_data["warnings"]))
-    summary_table.add_row("Critical", str(scan_data["critical"]))
+    summary_table.add_row(
+        "Total Resources",
+        str(scan_data["total_resources"]),
+    )
+
+    summary_table.add_row(
+        "Passed",
+        str(scan_data["passed"]),
+    )
+
+    summary_table.add_row(
+        "Warnings",
+        str(scan_data["warnings"]),
+    )
+
+    summary_table.add_row(
+        "Critical",
+        str(scan_data["critical"]),
+    )
 
     layout["summary"].update(
         create_panel(
@@ -205,20 +222,49 @@ def create_layout(scan_data):
     )
 
     # =========================
+    # COST OPTIMIZATION
+    # =========================
+
+    layout["optimization"].update(
+        create_cost_optimization()
+    )
+
+    # =========================
     # RECOMMENDATIONS
     # =========================
 
     recommendation_text = Text()
 
-    recommendation_text.append("🔴 Critical\n", style="bold red")
-    recommendation_text.append("• Enable CloudTrail Logging\n\n")
+    recommendation_text.append(
+        "🔴 Critical\n",
+        style="bold red",
+    )
 
-    recommendation_text.append("🟡 Warning\n", style="bold yellow")
-    recommendation_text.append("• Remove Unused EBS Volumes\n\n")
+    recommendation_text.append(
+        "• Enable CloudTrail Logging\n\n"
+    )
 
-    recommendation_text.append("🟢 Recommendation\n", style="bold green")
-    recommendation_text.append("• Enable S3 Versioning\n")
-    recommendation_text.append("• Reduce EC2 Idle Instances")
+    recommendation_text.append(
+        "🟡 Warning\n",
+        style="bold yellow",
+    )
+
+    recommendation_text.append(
+        "• Remove Unused EBS Volumes\n\n"
+    )
+
+    recommendation_text.append(
+        "🟢 Recommendation\n",
+        style="bold green",
+    )
+
+    recommendation_text.append(
+        "• Enable S3 Versioning\n"
+    )
+
+    recommendation_text.append(
+        "• Reduce EC2 Idle Instances"
+    )
 
     layout["right"].update(
         create_panel(
