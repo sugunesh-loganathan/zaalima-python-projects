@@ -2,7 +2,6 @@
 Cleanup Recommendation Module
 """
 
-
 from .base import BaseScanner
 
 
@@ -17,11 +16,9 @@ class CleanupRecommender(BaseScanner):
         status = resource.get("status")
         details = resource.get("details", {})
 
-        # Detect unattached EBS volumes
         if resource_type == "EBS":
             return not details.get("attached", False)
 
-        # Detect unassociated Elastic IP addresses
         if resource_type == "ElasticIP":
             return status == "Unassociated"
 
@@ -29,54 +26,58 @@ class CleanupRecommender(BaseScanner):
 
     def is_idle_resource(self, resource):
         """
-        Check whether an EC2 resource has low CPU utilization.
+        Check whether a scanned AWS resource is idle.
         """
-        resource_type = resource.get("resource_type")
-        details = resource.get("details", {})
-
-        if resource_type != "CloudWatch":
+        if resource.get("resource_type") != "CloudWatch":
             return False
 
-        average_cpu = details.get("average_cpu_percent")
+        average_cpu = resource.get("details", {}).get(
+            "average_cpu_percent"
+        )
 
         if average_cpu is None:
             return False
 
         return average_cpu < 5
 
+    def get_recommendation(self, resource):
+        """
+        Return a cleanup recommendation based on resource type.
+        """
+        resource_type = resource.get("resource_type")
+
+        if self.is_unused_resource(resource):
+
+            if resource_type == "EBS":
+                return "Review unattached EBS volume for deletion."
+
+            if resource_type == "ElasticIP":
+                return "Review unassociated Elastic IP for release."
+
+        if self.is_idle_resource(resource):
+            return (
+                "Review EC2 instance for stopping or rightsizing "
+                "due to low CPU utilization."
+            )
+
+        return "No action required."
+
     def recommend(self, scan_results):
         """
-        Generate cleanup recommendations for scanned resources.
+        Generate cleanup recommendations.
         """
         recommendations = []
 
         for resource in scan_results:
-            unused = self.is_unused_resource(resource)
-            idle = self.is_idle_resource(resource)
 
-            if unused:
-                recommendation_text = "Review resource for cleanup"
-
-            elif idle:
-                recommendation_text = (
-                    "Review idle EC2 instance for optimization"
-                )
-
-            else:
-                recommendation_text = "No action required"
-
-            recommendation = {
+            recommendations.append({
                 "resource_type": resource.get("resource_type"),
                 "resource_id": resource.get("resource_id"),
-                "unused": unused,
-                "idle": idle,
-                "recommendation": recommendation_text,
-            }
-
-            recommendations.append(recommendation)
+                "recommendation": self.get_recommendation(resource),
+            })
 
         self.logger.info(
-            "Cleanup recommendations generated successfully."
+            "Cleanup recommendation engine completed."
         )
 
         return recommendations
