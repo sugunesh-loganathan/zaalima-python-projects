@@ -1,6 +1,5 @@
 """
 Application Entry Point
-
 Starts the Cloud Infrastructure Auditor
 Reporting Module.
 """
