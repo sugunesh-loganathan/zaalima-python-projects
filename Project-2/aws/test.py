@@ -192,6 +192,38 @@
 # if __name__ == "__main__":
 #     main()
 
+# from aws.auth import AWSAuth
+# from aws.client_factory import AWSClientFactory
+# from aws.cleanup import CleanupService
+
+
+# def main():
+
+#     auth = AWSAuth(
+#         profile_name="default",
+#         region_name="ap-south-1"
+#     )
+
+#     factory = AWSClientFactory(auth)
+
+#     cleanup = CleanupService(factory)
+
+#     print("=" * 50)
+#     print("Cleanup Module Test")
+#     print("=" * 50)
+
+#     unused_volumes = cleanup.get_unused_volumes()
+
+#     print(f"Unused Volumes : {len(unused_volumes)}")
+
+#     unused_eips = cleanup.get_unused_elastic_ips()
+
+#     print(f"Unused Elastic IPs : {len(unused_eips)}")
+
+
+# if __name__ == "__main__":
+#     main()
+
 from aws.auth import AWSAuth
 from aws.client_factory import AWSClientFactory
 from aws.cleanup import CleanupService
@@ -209,16 +241,43 @@ def main():
     cleanup = CleanupService(factory)
 
     print("=" * 50)
-    print("Cleanup Module Test")
+    print("WEEK 3 - DAY 2 RESOURCE VALIDATION TEST")
     print("=" * 50)
+
+    # --------------------------------------------------
+    # EBS Validation
+    # --------------------------------------------------
+
+    print("\nEBS Resource Validation")
 
     unused_volumes = cleanup.get_unused_volumes()
 
-    print(f"Unused Volumes : {len(unused_volumes)}")
+    print(f"Validated Unused Volumes: {len(unused_volumes)}")
+
+    for volume in unused_volumes:
+        print(
+            f"Volume: {volume['VolumeId']} | "
+            f"State: {volume['State']} | "
+            f"Attachments: {volume['Attachments']}"
+        )
+
+    # --------------------------------------------------
+    # Elastic IP Validation
+    # --------------------------------------------------
+
+    print("\nElastic IP Resource Validation")
 
     unused_eips = cleanup.get_unused_elastic_ips()
 
-    print(f"Unused Elastic IPs : {len(unused_eips)}")
+    print(f"Validated Unused Elastic IPs: {len(unused_eips)}")
+
+    for address in unused_eips:
+        print(
+            f"Public IP: {address['PublicIp']} | "
+            f"InstanceId: {address['InstanceId']}"
+        )
+
+    print("\nResource validation completed successfully.")
 
 
 if __name__ == "__main__":
