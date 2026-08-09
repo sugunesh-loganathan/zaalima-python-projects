@@ -1,11 +1,22 @@
 from app.scanner.base_scanner import BaseScanner
 from app.models.scan_result import ScanResult
+from app.aws.session import AWSSession
 
 
 class EC2Scanner(BaseScanner):
     """
     Scanner for EC2 resources.
     """
+
+    def __init__(self):
+        self.session_manager = AWSSession()
+
+    def get_client(self):
+        """
+        Create and return an EC2 boto3 client.
+        """
+
+        return self.session_manager.create_client("ec2")
 
     def scan(self):
         """
