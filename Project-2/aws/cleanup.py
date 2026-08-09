@@ -6,10 +6,11 @@ class CleanupService:
     """
     Service class for AWS cleanup operations.
 
-    This module only identifies and validates resources
+    This module identifies and validates resources
     that may be eligible for cleanup.
 
-    No AWS resources are deleted or released here.
+    Actual deletion/release operations are not performed
+    during dry-run mode.
     """
 
     def __init__(self, client_factory):
@@ -22,7 +23,7 @@ class CleanupService:
 
     def get_unused_volumes(self):
         """
-        Return EBS volumes that are potentially unused.
+        Return EBS volumes eligible for cleanup.
         """
         volumes = self.ebs_service.list_volumes()
 
@@ -34,12 +35,8 @@ class CleanupService:
 
     def validate_volume(self, volume):
         """
-        Validate whether an EBS volume is safe
-        for cleanup recommendation.
-
-        Conditions:
-        - Volume state must be 'available'
-        - Volume must have no attachments
+        Validate whether an EBS volume is eligible
+        for cleanup.
         """
 
         return (
@@ -53,7 +50,7 @@ class CleanupService:
 
     def get_unused_elastic_ips(self):
         """
-        Return Elastic IPs that are potentially unused.
+        Return Elastic IPs eligible for cleanup.
         """
         addresses = self.eip_service.list_addresses()
 
@@ -66,9 +63,6 @@ class CleanupService:
     def validate_elastic_ip(self, address):
         """
         Validate whether an Elastic IP is unassociated.
-
-        Condition:
-        - InstanceId must be None.
         """
 
         return address.get("InstanceId") is None
@@ -82,9 +76,6 @@ class CleanupService:
         Validate EC2 instance information.
 
         This method does not terminate the instance.
-
-        Returns True when the instance contains the
-        required information for further cleanup analysis.
         """
 
         instance_id = instance.get("InstanceId")
@@ -94,3 +85,58 @@ class CleanupService:
             instance_id is not None
             and state is not None
         )
+
+    # --------------------------------------------------
+    # DRY RUN
+    # --------------------------------------------------
+
+    def dry_run(self):
+        """
+        Preview resources that are eligible for cleanup.
+
+        No AWS resources are deleted or released.
+        """
+
+        unused_volumes = self.get_unused_volumes()
+        unused_eips = self.get_unused_elastic_ips()
+
+        print("\n" + "=" * 60)
+        print("CLEANUP DRY RUN")
+        print("=" * 60)
+
+        print("\nEBS Volumes eligible for cleanup:")
+
+        if unused_volumes:
+
+            for volume in unused_volumes:
+                print(
+                    f"  - {volume['VolumeId']} | "
+                    f"State: {volume['State']} | "
+                    f"Attachments: {volume['Attachments']}"
+                )
+
+        else:
+            print("  No EBS volumes eligible for cleanup.")
+
+        print("\nElastic IPs eligible for cleanup:")
+
+        if unused_eips:
+
+            for address in unused_eips:
+                print(
+                    f"  - {address['PublicIp']} | "
+                    f"InstanceId: {address['InstanceId']}"
+                )
+
+        else:
+            print("  No Elastic IPs eligible for cleanup.")
+
+        print("\n" + "-" * 60)
+        print("DRY RUN ONLY")
+        print("No AWS resources were deleted or released.")
+        print("-" * 60)
+
+        return {
+            "volumes": unused_volumes,
+            "elastic_ips": unused_eips
+        }
