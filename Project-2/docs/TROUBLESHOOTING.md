@@ -8,6 +8,13 @@ If the application does not run because of missing packages, install the require
 
 ```bash
 pip install -r requirements.txt
+```
+
+If you are using a virtual environment, activate it first:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
 
 ### 2. Python Command Not Found
 
@@ -17,13 +24,23 @@ Check the Python installation using:
 
 ```bash
 python --version
+```
 
 ### 3. Application Does Not Start
 
-Make sure you are running the command from the Project-2 directory:
+Make sure you are running the command from the Project-2 directory.
+
+Run:
 
 ```bash
 python app/main.py
+```
+
+A successful startup should display:
+
+```text
+Cloud Infrastructure Auditor CLI Initialized
+```
 
 ### 4. Environment Configuration
 
@@ -32,6 +49,26 @@ If the project requires environment variables, create a `.env` file based on `.e
 ### 5. Virtual Environment
 
 It is recommended to use a Python virtual environment to avoid dependency conflicts.
+
+Create a virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Activate it in PowerShell:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks script execution, run:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+Then activate the virtual environment again.
 
 ## Notes
 
