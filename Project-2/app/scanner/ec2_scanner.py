@@ -20,23 +20,26 @@ class EC2Scanner(BaseScanner):
 
     def scan(self):
         """
-        Simulate scanning EC2 instances.
+        Discover and analyze EC2 instances.
         """
 
-        instances = [
-            {
-                "instance_id": "i-01abc123",
-                "state": "stopped",
-                "type": "t2.micro",
-                "cpu_utilization": 2,
-            },
-            {
-                "instance_id": "i-02def456",
-                "state": "running",
-                "type": "t3.small",
-                "cpu_utilization": 48,
-            },
-        ]
+        ec2 = self.get_client()
+
+        response = ec2.describe_instances()
+
+        instances = []
+
+        for reservation in response["Reservations"]:
+
+            for instance in reservation["Instances"]:
+
+                instance_data = {
+                    "instance_id": instance["InstanceId"],
+                    "state": instance["State"]["Name"],
+                    "type": instance["InstanceType"],
+                }
+
+                instances.append(instance_data)
 
         # Analyze each instance
         for instance in instances:
@@ -44,11 +47,11 @@ class EC2Scanner(BaseScanner):
             if instance["state"] == "stopped":
                 instance["recommendation"] = "Safe to terminate"
 
-            elif instance["cpu_utilization"] < 10:
-                instance["recommendation"] = "Underutilized"
+            elif instance["state"] == "running":
+                instance["recommendation"] = "Healthy"
 
             else:
-                instance["recommendation"] = "Healthy"
+                instance["recommendation"] = "Review required"
 
         result = ScanResult(
             service="EC2",
