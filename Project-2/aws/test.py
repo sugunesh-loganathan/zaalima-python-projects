@@ -283,6 +283,55 @@
 # if __name__ == "__main__":
 #     main()
 
+# from aws.auth import AWSAuth
+# from aws.client_factory import AWSClientFactory
+# from aws.cleanup import CleanupService
+
+
+# def main():
+
+#     auth = AWSAuth(
+#         profile_name="default",
+#         region_name="ap-south-1"
+#     )
+
+#     factory = AWSClientFactory(auth)
+
+#     cleanup = CleanupService(factory)
+
+#     print("=" * 60)
+#     print("WEEK 3 - DAY 3 DRY RUN TEST")
+#     print("=" * 60)
+
+#     result = cleanup.dry_run()
+
+#     print("\nLocal Dry Run Validation")
+
+#     test_volume = {
+#         "VolumeId": "vol-test-123",
+#         "State": "available",
+#         "Attachments": 0
+#     }
+
+#     test_eip = {
+#         "PublicIp": "1.2.3.4",
+#         "InstanceId": None
+#     }
+
+#     print(
+#         "Test EBS eligible:",
+#         cleanup.validate_volume(test_volume)
+#     )
+
+#     print(
+#         "Test EIP eligible:",
+#         cleanup.validate_elastic_ip(test_eip)
+#     )
+
+
+# if __name__ == "__main__":
+#     main()
+
 from aws.auth import AWSAuth
 from aws.client_factory import AWSClientFactory
 from aws.cleanup import CleanupService
@@ -300,33 +349,48 @@ def main():
     cleanup = CleanupService(factory)
 
     print("=" * 60)
-    print("WEEK 3 - DAY 3 DRY RUN TEST")
+    print("WEEK 3 - DAY 4 CLEANUP HELPER TEST")
     print("=" * 60)
+
+    # --------------------------------------------------
+    # Dry Run
+    # --------------------------------------------------
 
     result = cleanup.dry_run()
 
-    print("\nLocal Dry Run Validation")
-
-    test_volume = {
-        "VolumeId": "vol-test-123",
-        "State": "available",
-        "Attachments": 0
-    }
-
-    test_eip = {
-        "PublicIp": "1.2.3.4",
-        "InstanceId": None
-    }
+    print("\nCleanup Summary")
 
     print(
-        "Test EBS eligible:",
-        cleanup.validate_volume(test_volume)
+        f"EBS cleanup candidates: "
+        f"{len(result['volumes'])}"
     )
 
     print(
-        "Test EIP eligible:",
-        cleanup.validate_elastic_ip(test_eip)
+        f"Elastic IP cleanup candidates: "
+        f"{len(result['elastic_ips'])}"
     )
+
+    # --------------------------------------------------
+    # Local Helper Tests
+    # --------------------------------------------------
+
+    print("\nLocal Cleanup Helper Tests")
+
+    volume_result = cleanup.cleanup_volume(
+        "vol-test-123",
+        dry_run=True
+    )
+
+    print("EBS Helper:")
+    print(volume_result)
+
+    eip_result = cleanup.cleanup_elastic_ip(
+        "eipalloc-test-123",
+        dry_run=True
+    )
+
+    print("Elastic IP Helper:")
+    print(eip_result)
 
 
 if __name__ == "__main__":

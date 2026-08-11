@@ -1,21 +1,30 @@
+from botocore.exceptions import ClientError
+
 from aws.ebs import EBSService
 from aws.eip import ElasticIPService
+from aws.exceptions import AWSAuthenticationError
+from utils.logger import logger
 
 
 class CleanupService:
     """
     Service class for AWS cleanup operations.
 
-    This module identifies and validates resources
-    that may be eligible for cleanup.
-
-    Actual deletion/release operations are not performed
-    during dry-run mode.
+    Supports:
+    - Resource discovery
+    - Resource validation
+    - Dry-run cleanup
+    - Safe cleanup helpers
     """
 
     def __init__(self, client_factory):
+
+        self.client_factory = client_factory
+
         self.ebs_service = EBSService(client_factory)
         self.eip_service = ElasticIPService(client_factory)
+
+        self.ec2_client = client_factory.get_client("ec2")
 
     # --------------------------------------------------
     # EBS
@@ -25,6 +34,7 @@ class CleanupService:
         """
         Return EBS volumes eligible for cleanup.
         """
+
         volumes = self.ebs_service.list_volumes()
 
         return [
@@ -52,6 +62,7 @@ class CleanupService:
         """
         Return Elastic IPs eligible for cleanup.
         """
+
         addresses = self.eip_service.list_addresses()
 
         return [
@@ -75,7 +86,7 @@ class CleanupService:
         """
         Validate EC2 instance information.
 
-        This method does not terminate the instance.
+        No instance is terminated here.
         """
 
         instance_id = instance.get("InstanceId")
@@ -87,14 +98,137 @@ class CleanupService:
         )
 
     # --------------------------------------------------
+    # EBS CLEANUP HELPER
+    # --------------------------------------------------
+
+    def cleanup_volume(self, volume_id, dry_run=True):
+        """
+        Delete an EBS volume or preview the deletion.
+
+        dry_run=True:
+            No AWS API call is made.
+
+        dry_run=False:
+            EBS volume deletion is attempted.
+        """
+
+        if not volume_id:
+            raise ValueError("Volume ID is required.")
+
+        if dry_run:
+
+            logger.info(
+                f"[DRY RUN] EBS volume {volume_id} would be deleted."
+            )
+
+            return {
+                "resource_type": "EBS",
+                "resource_id": volume_id,
+                "action": "delete",
+                "dry_run": True,
+                "status": "preview"
+            }
+
+        try:
+
+            self.ec2_client.delete_volume(
+                VolumeId=volume_id
+            )
+
+            logger.info(
+                f"EBS volume {volume_id} deleted successfully."
+            )
+
+            return {
+                "resource_type": "EBS",
+                "resource_id": volume_id,
+                "action": "delete",
+                "dry_run": False,
+                "status": "deleted"
+            }
+
+        except ClientError as e:
+
+            logger.error(
+                f"Failed to delete EBS volume {volume_id}: {e}"
+            )
+
+            raise AWSAuthenticationError(str(e))
+
+    # --------------------------------------------------
+    # ELASTIC IP CLEANUP HELPER
+    # --------------------------------------------------
+
+    def cleanup_elastic_ip(
+        self,
+        allocation_id,
+        dry_run=True
+    ):
+        """
+        Release an Elastic IP or preview the release.
+
+        dry_run=True:
+            No AWS API call is made.
+
+        dry_run=False:
+            Elastic IP release is attempted.
+        """
+
+        if not allocation_id:
+            raise ValueError("Allocation ID is required.")
+
+        if dry_run:
+
+            logger.info(
+                f"[DRY RUN] Elastic IP {allocation_id} "
+                f"would be released."
+            )
+
+            return {
+                "resource_type": "Elastic IP",
+                "resource_id": allocation_id,
+                "action": "release",
+                "dry_run": True,
+                "status": "preview"
+            }
+
+        try:
+
+            self.ec2_client.release_address(
+                AllocationId=allocation_id
+            )
+
+            logger.info(
+                f"Elastic IP {allocation_id} "
+                f"released successfully."
+            )
+
+            return {
+                "resource_type": "Elastic IP",
+                "resource_id": allocation_id,
+                "action": "release",
+                "dry_run": False,
+                "status": "released"
+            }
+
+        except ClientError as e:
+
+            logger.error(
+                f"Failed to release Elastic IP "
+                f"{allocation_id}: {e}"
+            )
+
+            raise AWSAuthenticationError(str(e))
+
+    # --------------------------------------------------
     # DRY RUN
     # --------------------------------------------------
 
     def dry_run(self):
         """
-        Preview resources that are eligible for cleanup.
+        Preview all cleanup candidates.
 
-        No AWS resources are deleted or released.
+        No AWS resources are modified.
         """
 
         unused_volumes = self.get_unused_volumes()
@@ -104,39 +238,64 @@ class CleanupService:
         print("CLEANUP DRY RUN")
         print("=" * 60)
 
+        volume_results = []
+
         print("\nEBS Volumes eligible for cleanup:")
 
         if unused_volumes:
 
             for volume in unused_volumes:
+
+                result = self.cleanup_volume(
+                    volume["VolumeId"],
+                    dry_run=True
+                )
+
+                volume_results.append(result)
+
                 print(
-                    f"  - {volume['VolumeId']} | "
-                    f"State: {volume['State']} | "
-                    f"Attachments: {volume['Attachments']}"
+                    f"  - {volume['VolumeId']} "
+                    f"would be deleted."
                 )
 
         else:
-            print("  No EBS volumes eligible for cleanup.")
+
+            print(
+                "  No EBS volumes eligible for cleanup."
+            )
+
+        eip_results = []
 
         print("\nElastic IPs eligible for cleanup:")
 
         if unused_eips:
 
             for address in unused_eips:
+
+                result = self.cleanup_elastic_ip(
+                    address["AllocationId"],
+                    dry_run=True
+                )
+
+                eip_results.append(result)
+
                 print(
-                    f"  - {address['PublicIp']} | "
-                    f"InstanceId: {address['InstanceId']}"
+                    f"  - {address['PublicIp']} "
+                    f"would be released."
                 )
 
         else:
-            print("  No Elastic IPs eligible for cleanup.")
+
+            print(
+                "  No Elastic IPs eligible for cleanup."
+            )
 
         print("\n" + "-" * 60)
         print("DRY RUN ONLY")
-        print("No AWS resources were deleted or released.")
+        print("No AWS resources were modified.")
         print("-" * 60)
 
         return {
-            "volumes": unused_volumes,
-            "elastic_ips": unused_eips
+            "volumes": volume_results,
+            "elastic_ips": eip_results
         }
