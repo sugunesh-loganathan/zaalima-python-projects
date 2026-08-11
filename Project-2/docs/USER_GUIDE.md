@@ -51,6 +51,7 @@ When the application starts successfully, it displays:
 ```text
 Cloud Infrastructure Auditor CLI Initialized
 ```
+
 ### Command Summary
 
 | Command | Purpose |
