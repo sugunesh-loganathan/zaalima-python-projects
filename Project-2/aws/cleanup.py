@@ -4,7 +4,7 @@ from aws.ebs import EBSService
 from aws.eip import ElasticIPService
 from aws.exceptions import AWSAuthenticationError
 from utils.logger import logger
-
+from aws.exceptions import AWSCleanupError
 
 class CleanupService:
     """
@@ -104,12 +104,6 @@ class CleanupService:
     def cleanup_volume(self, volume_id, dry_run=True):
         """
         Delete an EBS volume or preview the deletion.
-
-        dry_run=True:
-            No AWS API call is made.
-
-        dry_run=False:
-            EBS volume deletion is attempted.
         """
 
         if not volume_id:
@@ -149,29 +143,21 @@ class CleanupService:
 
         except ClientError as e:
 
+            error_code = e.response["Error"]["Code"]
+
             logger.error(
-                f"Failed to delete EBS volume {volume_id}: {e}"
+                f"Failed to delete EBS volume "
+                f"{volume_id} | Error: {error_code}"
             )
 
-            raise AWSAuthenticationError(str(e))
+            raise AWSCleanupError(
+                f"Failed to delete EBS volume "
+                f"{volume_id}: {error_code}"
+            )
 
-    # --------------------------------------------------
-    # ELASTIC IP CLEANUP HELPER
-    # --------------------------------------------------
-
-    def cleanup_elastic_ip(
-        self,
-        allocation_id,
-        dry_run=True
-    ):
+    def cleanup_elastic_ip(self, allocation_id, dry_run=True):
         """
         Release an Elastic IP or preview the release.
-
-        dry_run=True:
-            No AWS API call is made.
-
-        dry_run=False:
-            Elastic IP release is attempted.
         """
 
         if not allocation_id:
@@ -213,16 +199,17 @@ class CleanupService:
 
         except ClientError as e:
 
+            error_code = e.response["Error"]["Code"]
+
             logger.error(
                 f"Failed to release Elastic IP "
-                f"{allocation_id}: {e}"
+                f"{allocation_id} | Error: {error_code}"
             )
 
-            raise AWSAuthenticationError(str(e))
-
-    # --------------------------------------------------
-    # DRY RUN
-    # --------------------------------------------------
+            raise AWSCleanupError(
+                f"Failed to release Elastic IP "
+                f"{allocation_id}: {error_code}"
+            )
 
     def dry_run(self):
         """
