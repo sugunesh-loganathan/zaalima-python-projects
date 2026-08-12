@@ -2,6 +2,14 @@ from app.scanner.base_scanner import BaseScanner
 from app.models.scan_result import ScanResult
 from app.aws.session import AWSSession
 
+from botocore.exceptions import (
+    NoCredentialsError,
+    PartialCredentialsError,
+    ClientError,
+)
+
+from app.utils import logger
+
 
 class EC2Scanner(BaseScanner):
     """
@@ -23,44 +31,103 @@ class EC2Scanner(BaseScanner):
         Discover and analyze EC2 instances.
         """
 
-        ec2 = self.get_client()
+        logger.info("Starting EC2 resource scan...")
 
-        response = ec2.describe_instances()
+        try:
+            ec2 = self.get_client()
 
-        instances = []
+            response = ec2.describe_instances()
 
-        for reservation in response["Reservations"]:
+            instances = []
 
-            for instance in reservation["Instances"]:
+            for reservation in response["Reservations"]:
 
-                instance_data = {
-                    "instance_id": instance["InstanceId"],
-                    "state": instance["State"]["Name"],
-                    "type": instance["InstanceType"],
-                }
+                for instance in reservation["Instances"]:
 
-                instances.append(instance_data)
+                    instance_data = {
+                        "instance_id": instance["InstanceId"],
+                        "state": instance["State"]["Name"],
+                        "type": instance["InstanceType"],
+                    }
 
-        # Analyze each instance
-        for instance in instances:
+                    instances.append(instance_data)
 
-            if instance["state"] == "stopped":
-                instance["recommendation"] = "Safe to terminate"
+            # Analyze each instance
+            for instance in instances:
 
-            elif instance["state"] == "running":
-                instance["recommendation"] = "Healthy"
+                if instance["state"] == "stopped":
+                    instance["recommendation"] = "Safe to terminate"
 
-            else:
-                instance["recommendation"] = "Review required"
+                elif instance["state"] == "running":
+                    instance["recommendation"] = "Healthy"
 
-        result = ScanResult(
-            service="EC2",
-            status="success",
-            resources_found=len(instances),
-            message="EC2 scan completed successfully.",
-        )
+                else:
+                    instance["recommendation"] = "Review required"
 
-        return {
-            **result.to_dict(),
-            "instances": instances,
-        }
+            logger.info(
+                f"EC2 scan completed. Resources found: {len(instances)}"
+            )
+
+            result = ScanResult(
+                service="EC2",
+                status="success",
+                resources_found=len(instances),
+                message="EC2 scan completed successfully.",
+            )
+
+            return {
+                **result.to_dict(),
+                "instances": instances,
+            }
+
+        except NoCredentialsError:
+
+            logger.error("AWS credentials not found.")
+
+            result = ScanResult(
+                service="EC2",
+                status="failed",
+                resources_found=0,
+                message="AWS credentials not found.",
+            )
+
+            return result.to_dict()
+
+        except PartialCredentialsError:
+
+            logger.error("Incomplete AWS credentials.")
+
+            result = ScanResult(
+                service="EC2",
+                status="failed",
+                resources_found=0,
+                message="Incomplete AWS credentials.",
+            )
+
+            return result.to_dict()
+
+        except ClientError as e:
+
+            logger.error(f"AWS EC2 API error: {e}")
+
+            result = ScanResult(
+                service="EC2",
+                status="failed",
+                resources_found=0,
+                message=f"AWS EC2 API error: {e}",
+            )
+
+            return result.to_dict()
+
+        except Exception as e:
+
+            logger.error(f"Unexpected EC2 scanner error: {e}")
+
+            result = ScanResult(
+                service="EC2",
+                status="failed",
+                resources_found=0,
+                message=f"Unexpected scanner error: {e}",
+            )
+
+            return result.to_dict()
