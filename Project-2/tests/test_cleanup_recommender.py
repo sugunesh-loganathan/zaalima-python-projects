@@ -188,6 +188,116 @@ class TestCleanupRecommender(unittest.TestCase):
             "No action required."
         )
 
+    def test_recommendation_priority(self):
+        """Test the priority levels of different recommendations."""
+        resource = {
+            "resource_type": "EBS",
+            "resource_id": "vol-123",
+            "status": "available",
+            "details": {
+                "attached": False
+            }
+        }
+
+        recommendation, priority = (
+            self.recommender.get_recommendation(resource)
+        )
+
+        self.assertEqual(priority, "High")
+        self.assertIn("EBS", recommendation)
+
+    # ---------------------------------------------------------
+    # Edge-case tests
+    # ---------------------------------------------------------
+
+    def test_ebs_missing_details_is_handled(self):
+        """EBS without details should not cause an error."""
+        resource = {
+            "resource_type": "EBS",
+            "resource_id": "vol-edge-1",
+            "status": "available"
+        }
+
+        result = self.recommender.is_unused_resource(resource)
+
+        self.assertTrue(result)
+
+    def test_ebs_missing_attached_value_is_unused(self):
+        """EBS without attached value should be treated as unused."""
+        resource = {
+            "resource_type": "EBS",
+            "resource_id": "vol-edge-2",
+            "status": "available",
+            "details": {}
+        }
+
+        result = self.recommender.is_unused_resource(resource)
+
+        self.assertTrue(result)
+
+    def test_elastic_ip_missing_status_is_not_unused(self):
+        """Elastic IP without status should not be marked unused."""
+        resource = {
+            "resource_type": "ElasticIP",
+            "resource_id": "eip-edge-1",
+            "details": {}
+        }
+
+        result = self.recommender.is_unused_resource(resource)
+
+        self.assertFalse(result)
+
+    def test_cloudwatch_missing_details_is_not_idle(self):
+        """CloudWatch without details should not be marked idle."""
+        resource = {
+            "resource_type": "CloudWatch",
+            "resource_id": "i-edge-1"
+        }
+
+        result = self.recommender.is_idle_resource(resource)
+
+        self.assertFalse(result)
+
+    def test_cpu_exactly_five_percent_is_not_idle(self):
+        """CPU exactly at 5 percent should not be considered idle."""
+        resource = {
+            "resource_type": "CloudWatch",
+            "resource_id": "i-edge-2",
+            "details": {
+                "average_cpu_percent": 5
+            }
+        }
+
+        result = self.recommender.is_idle_resource(resource)
+
+        self.assertFalse(result)
+
+    def test_zero_cpu_is_idle(self):
+        """Zero CPU utilization should be considered idle."""
+        resource = {
+            "resource_type": "CloudWatch",
+            "resource_id": "i-edge-3",
+            "details": {
+                "average_cpu_percent": 0
+            }
+        }
+
+        result = self.recommender.is_idle_resource(resource)
+
+        self.assertTrue(result)
+
+    def test_unknown_resource_type_is_not_unused(self):
+        """Unknown resource types should not be marked unused."""
+        resource = {
+            "resource_type": "UNKNOWN",
+            "resource_id": "unknown-1",
+            "details": {}
+        }
+
+        result = self.recommender.is_unused_resource(resource)
+
+        self.assertFalse(result)
+
 
 if __name__ == "__main__":
     unittest.main()
