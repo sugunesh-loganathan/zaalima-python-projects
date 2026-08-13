@@ -397,6 +397,137 @@
 #     main()
 
 
+# from aws.auth import AWSAuth
+# from aws.client_factory import AWSClientFactory
+# from aws.cleanup import CleanupService
+# from aws.exceptions import AWSCleanupError
+
+
+# def main():
+
+#     # --------------------------------------------------
+#     # AWS AUTHENTICATION
+#     # --------------------------------------------------
+
+#     auth = AWSAuth(
+#         profile_name="default",
+#         region_name="ap-south-1"
+#     )
+
+#     # --------------------------------------------------
+#     # AWS CLIENT FACTORY
+#     # --------------------------------------------------
+
+#     factory = AWSClientFactory(auth)
+
+#     # --------------------------------------------------
+#     # CLEANUP SERVICE
+#     # --------------------------------------------------
+
+#     cleanup = CleanupService(factory)
+
+#     print("=" * 60)
+#     print("WEEK 3 - DAY 5 EXCEPTION HANDLING TEST")
+#     print("=" * 60)
+
+#     # --------------------------------------------------
+#     # DRY RUN TEST
+#     # --------------------------------------------------
+
+#     print("\nCleanup Dry Run")
+
+#     result = cleanup.dry_run()
+
+#     print("\nCleanup Summary")
+
+#     print(
+#         f"EBS cleanup candidates: "
+#         f"{len(result['volumes'])}"
+#     )
+
+#     print(
+#         f"Elastic IP cleanup candidates: "
+#         f"{len(result['elastic_ips'])}"
+#     )
+
+#     # --------------------------------------------------
+#     # LOCAL CLEANUP HELPER TEST
+#     # --------------------------------------------------
+
+#     print("\nLocal Cleanup Helper Tests")
+
+#     try:
+
+#         volume_result = cleanup.cleanup_volume(
+#             "vol-test-123",
+#             dry_run=True
+#         )
+
+#         print("EBS Helper:")
+#         print(volume_result)
+
+#     except AWSCleanupError as e:
+
+#         print(f"EBS Cleanup Error: {e}")
+
+#     try:
+
+#         eip_result = cleanup.cleanup_elastic_ip(
+#             "eipalloc-test-123",
+#             dry_run=True
+#         )
+
+#         print("Elastic IP Helper:")
+#         print(eip_result)
+
+#     except AWSCleanupError as e:
+
+#         print(f"Elastic IP Cleanup Error: {e}")
+
+#     # --------------------------------------------------
+#     # EXCEPTION VALIDATION TEST
+#     # --------------------------------------------------
+
+#     print("\nException Handling Tests")
+
+#     # EBS invalid input
+
+#     try:
+
+#         cleanup.cleanup_volume(
+#             "",
+#             dry_run=True
+#         )
+
+#     except ValueError as e:
+
+#         print(f"EBS Validation Error: {e}")
+
+#     # Elastic IP invalid input
+
+#     try:
+
+#         cleanup.cleanup_elastic_ip(
+#             "",
+#             dry_run=True
+#         )
+
+#     except ValueError as e:
+
+#         print(f"Elastic IP Validation Error: {e}")
+
+#     # --------------------------------------------------
+#     # COMPLETED
+#     # --------------------------------------------------
+
+#     print("\n" + "=" * 60)
+#     print("WEEK 3 - DAY 5 TEST COMPLETED")
+#     print("=" * 60)
+
+
+# if __name__ == "__main__":
+#     main()
+
 from aws.auth import AWSAuth
 from aws.client_factory import AWSClientFactory
 from aws.cleanup import CleanupService
@@ -427,102 +558,36 @@ def main():
     cleanup = CleanupService(factory)
 
     print("=" * 60)
-    print("WEEK 3 - DAY 5 EXCEPTION HANDLING TEST")
+    print("WEEK 3 - DAY 6 CLEANUP SUMMARY TEST")
     print("=" * 60)
 
     # --------------------------------------------------
-    # DRY RUN TEST
+    # CLEANUP SUMMARY
     # --------------------------------------------------
-
-    print("\nCleanup Dry Run")
-
-    result = cleanup.dry_run()
-
-    print("\nCleanup Summary")
-
-    print(
-        f"EBS cleanup candidates: "
-        f"{len(result['volumes'])}"
-    )
-
-    print(
-        f"Elastic IP cleanup candidates: "
-        f"{len(result['elastic_ips'])}"
-    )
-
-    # --------------------------------------------------
-    # LOCAL CLEANUP HELPER TEST
-    # --------------------------------------------------
-
-    print("\nLocal Cleanup Helper Tests")
 
     try:
 
-        volume_result = cleanup.cleanup_volume(
-            "vol-test-123",
+        summary = cleanup.generate_summary(
             dry_run=True
         )
 
-        print("EBS Helper:")
-        print(volume_result)
+        cleanup.display_summary(summary)
 
     except AWSCleanupError as e:
 
-        print(f"EBS Cleanup Error: {e}")
+        print(f"\nCleanup Error: {e}")
 
-    try:
+    except Exception as e:
 
-        eip_result = cleanup.cleanup_elastic_ip(
-            "eipalloc-test-123",
-            dry_run=True
-        )
-
-        print("Elastic IP Helper:")
-        print(eip_result)
-
-    except AWSCleanupError as e:
-
-        print(f"Elastic IP Cleanup Error: {e}")
+        print(f"\nUnexpected Error: {e}")
 
     # --------------------------------------------------
-    # EXCEPTION VALIDATION TEST
+    # SUMMARY DATA TEST
     # --------------------------------------------------
 
-    print("\nException Handling Tests")
+    print("\nSummary Data")
 
-    # EBS invalid input
-
-    try:
-
-        cleanup.cleanup_volume(
-            "",
-            dry_run=True
-        )
-
-    except ValueError as e:
-
-        print(f"EBS Validation Error: {e}")
-
-    # Elastic IP invalid input
-
-    try:
-
-        cleanup.cleanup_elastic_ip(
-            "",
-            dry_run=True
-        )
-
-    except ValueError as e:
-
-        print(f"Elastic IP Validation Error: {e}")
-
-    # --------------------------------------------------
-    # COMPLETED
-    # --------------------------------------------------
-
-    print("\n" + "=" * 60)
-    print("WEEK 3 - DAY 5 TEST COMPLETED")
-    print("=" * 60)
+    print(summary)
 
 
 if __name__ == "__main__":

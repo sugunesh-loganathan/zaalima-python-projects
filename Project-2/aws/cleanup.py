@@ -286,3 +286,143 @@ class CleanupService:
             "volumes": volume_results,
             "elastic_ips": eip_results
         }
+        # --------------------------------------------------
+    # CLEANUP SUMMARY
+    # --------------------------------------------------
+
+    def generate_summary(self, dry_run=True):
+        """
+        Generate a summary of AWS cleanup candidates.
+
+        This method only scans and validates resources.
+        It does not modify AWS resources.
+        """
+
+        # Fetch all resources
+        volumes = self.ebs_service.list_volumes()
+        addresses = self.eip_service.list_addresses()
+
+        # Find cleanup candidates
+        unused_volumes = [
+            volume
+            for volume in volumes
+            if self.validate_volume(volume)
+        ]
+
+        unused_eips = [
+            address
+            for address in addresses
+            if self.validate_elastic_ip(address)
+        ]
+
+        # Build recommendations
+        recommendations = []
+
+        for volume in unused_volumes:
+
+            recommendations.append({
+                "resource_type": "EBS",
+                "resource_id": volume["VolumeId"],
+                "recommendation": "Delete unused EBS volume"
+            })
+
+        for address in unused_eips:
+
+            recommendations.append({
+                "resource_type": "Elastic IP",
+                "resource_id": address["AllocationId"],
+                "recommendation": "Release unassociated Elastic IP"
+            })
+
+        # Final summary
+        summary = {
+            "ebs": {
+                "total": len(volumes),
+                "cleanup_candidates": len(unused_volumes)
+            },
+
+            "elastic_ips": {
+                "total": len(addresses),
+                "cleanup_candidates": len(unused_eips)
+            },
+
+            "recommendations": recommendations,
+
+            "dry_run": dry_run
+        }
+
+        return summary
+        # --------------------------------------------------
+    # DISPLAY CLEANUP SUMMARY
+    # --------------------------------------------------
+
+    def display_summary(self, summary):
+        """
+        Display cleanup summary in a readable format.
+        """
+
+        print("\n")
+        print("=" * 60)
+        print("CLEANUP SUMMARY")
+        print("=" * 60)
+
+        # EBS
+        print("\nEBS Volumes")
+        print("-" * 30)
+
+        print(
+            f"Total Scanned      : "
+            f"{summary['ebs']['total']}"
+        )
+
+        print(
+            f"Cleanup Candidates : "
+            f"{summary['ebs']['cleanup_candidates']}"
+        )
+
+        # Elastic IP
+        print("\nElastic IPs")
+        print("-" * 30)
+
+        print(
+            f"Total Scanned      : "
+            f"{summary['elastic_ips']['total']}"
+        )
+
+        print(
+            f"Cleanup Candidates : "
+            f"{summary['elastic_ips']['cleanup_candidates']}"
+        )
+
+        # Recommendations
+        print("\nRecommendations")
+        print("-" * 30)
+
+        if summary["recommendations"]:
+
+            for recommendation in summary["recommendations"]:
+
+                print(
+                    f"- {recommendation['resource_type']} | "
+                    f"{recommendation['resource_id']} | "
+                    f"{recommendation['recommendation']}"
+                )
+
+        else:
+
+            print("No cleanup recommendations.")
+
+        # Mode
+        print("\nExecution Mode")
+        print("-" * 30)
+
+        if summary["dry_run"]:
+
+            print("DRY RUN")
+            print("No AWS resources were modified.")
+
+        else:
+
+            print("EXECUTE")
+
+        print("=" * 60)
