@@ -528,6 +528,71 @@
 # if __name__ == "__main__":
 #     main()
 
+# from aws.auth import AWSAuth
+# from aws.client_factory import AWSClientFactory
+# from aws.cleanup import CleanupService
+# from aws.exceptions import AWSCleanupError
+
+
+# def main():
+
+#     # --------------------------------------------------
+#     # AWS AUTHENTICATION
+#     # --------------------------------------------------
+
+#     auth = AWSAuth(
+#         profile_name="default",
+#         region_name="ap-south-1"
+#     )
+
+#     # --------------------------------------------------
+#     # AWS CLIENT FACTORY
+#     # --------------------------------------------------
+
+#     factory = AWSClientFactory(auth)
+
+#     # --------------------------------------------------
+#     # CLEANUP SERVICE
+#     # --------------------------------------------------
+
+#     cleanup = CleanupService(factory)
+
+#     print("=" * 60)
+#     print("WEEK 3 - DAY 6 CLEANUP SUMMARY TEST")
+#     print("=" * 60)
+
+#     # --------------------------------------------------
+#     # CLEANUP SUMMARY
+#     # --------------------------------------------------
+
+#     try:
+
+#         summary = cleanup.generate_summary(
+#             dry_run=True
+#         )
+
+#         cleanup.display_summary(summary)
+
+#     except AWSCleanupError as e:
+
+#         print(f"\nCleanup Error: {e}")
+
+#     except Exception as e:
+
+#         print(f"\nUnexpected Error: {e}")
+
+#     # --------------------------------------------------
+#     # SUMMARY DATA TEST
+#     # --------------------------------------------------
+
+#     print("\nSummary Data")
+
+#     print(summary)
+
+
+# if __name__ == "__main__":
+#     main()
+
 from aws.auth import AWSAuth
 from aws.client_factory import AWSClientFactory
 from aws.cleanup import CleanupService
@@ -536,58 +601,133 @@ from aws.exceptions import AWSCleanupError
 
 def main():
 
-    # --------------------------------------------------
+    # ==================================================
     # AWS AUTHENTICATION
-    # --------------------------------------------------
-
-    auth = AWSAuth(
-        profile_name="default",
-        region_name="ap-south-1"
-    )
-
-    # --------------------------------------------------
-    # AWS CLIENT FACTORY
-    # --------------------------------------------------
-
-    factory = AWSClientFactory(auth)
-
-    # --------------------------------------------------
-    # CLEANUP SERVICE
-    # --------------------------------------------------
-
-    cleanup = CleanupService(factory)
+    # ==================================================
 
     print("=" * 60)
-    print("WEEK 3 - DAY 6 CLEANUP SUMMARY TEST")
+    print("WEEK 3 - DAY 7 FINAL CLEANUP INTEGRATION TEST")
     print("=" * 60)
-
-    # --------------------------------------------------
-    # CLEANUP SUMMARY
-    # --------------------------------------------------
 
     try:
 
-        summary = cleanup.generate_summary(
+        auth = AWSAuth(
+            profile_name="default",
+            region_name="ap-south-1"
+        )
+
+        # ==================================================
+        # AWS CLIENT FACTORY
+        # ==================================================
+
+        factory = AWSClientFactory(auth)
+
+        # ==================================================
+        # CLEANUP SERVICE
+        # ==================================================
+
+        cleanup = CleanupService(factory)
+
+        # ==================================================
+        # FINAL WORKFLOW
+        # ==================================================
+
+        result = cleanup.run_cleanup_workflow(
             dry_run=True
         )
 
-        cleanup.display_summary(summary)
+        # ==================================================
+        # FINAL RESULT
+        # ==================================================
+
+        print("\n")
+        print("=" * 60)
+        print("FINAL CLEANUP WORKFLOW RESULT")
+        print("=" * 60)
+
+        print(
+            f"Status : {result['status']}"
+        )
+
+        print(
+            f"Mode   : {result['mode']}"
+        )
+
+        # ==================================================
+        # FINAL SUMMARY
+        # ==================================================
+
+        summary = result["summary"]
+
+        print("\nFinal Resource Summary")
+
+        print(
+            f"EBS Volumes Scanned : "
+            f"{summary['ebs']['total']}"
+        )
+
+        print(
+            f"EBS Cleanup Candidates : "
+            f"{summary['ebs']['cleanup_candidates']}"
+        )
+
+        print(
+            f"Elastic IPs Scanned : "
+            f"{summary['elastic_ips']['total']}"
+        )
+
+        print(
+            f"Elastic IP Cleanup Candidates : "
+            f"{summary['elastic_ips']['cleanup_candidates']}"
+        )
+
+        print("\nCleanup Recommendations")
+
+        if summary["recommendations"]:
+
+            for recommendation in summary["recommendations"]:
+
+                print(
+                    f"- "
+                    f"{recommendation['resource_type']} | "
+                    f"{recommendation['resource_id']} | "
+                    f"{recommendation['recommendation']}"
+                )
+
+        else:
+
+            print("No cleanup recommendations.")
+
+        # ==================================================
+        # SAFETY CONFIRMATION
+        # ==================================================
+
+        print("\nSafety Check")
+
+        if result["mode"] == "dry_run":
+
+            print(
+                "PASS - Dry Run enabled."
+            )
+
+            print(
+                "PASS - No AWS resources were modified."
+            )
+
+        print("\n")
+        print("=" * 60)
+        print("WEEK 3 - DAY 7 TEST COMPLETED")
+        print("=" * 60)
 
     except AWSCleanupError as e:
 
-        print(f"\nCleanup Error: {e}")
+        print("\nCleanup Error:")
+        print(e)
 
     except Exception as e:
 
-        print(f"\nUnexpected Error: {e}")
-
-    # --------------------------------------------------
-    # SUMMARY DATA TEST
-    # --------------------------------------------------
-
-    print("\nSummary Data")
-
-    print(summary)
+        print("\nUnexpected Error:")
+        print(e)
 
 
 if __name__ == "__main__":

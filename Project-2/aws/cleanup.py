@@ -426,3 +426,102 @@ class CleanupService:
             print("EXECUTE")
 
         print("=" * 60)
+
+        # --------------------------------------------------
+    # FINAL CLEANUP WORKFLOW
+    # --------------------------------------------------
+
+    def run_cleanup_workflow(self, dry_run=True):
+        """
+        Run the complete cleanup workflow.
+
+        Workflow:
+        1. Scan resources
+        2. Validate resources
+        3. Identify cleanup candidates
+        4. Generate summary
+        5. Display recommendations
+        6. Perform cleanup only when explicitly requested
+
+        By default, dry_run=True for safety.
+        """
+
+        print("\n")
+        print("=" * 60)
+        print("AWS CLEANUP WORKFLOW")
+        print("=" * 60)
+
+        print("\nStep 1: Scanning AWS resources...")
+
+        summary = self.generate_summary(
+            dry_run=dry_run
+        )
+
+        print("Resource scanning completed.")
+
+        # --------------------------------------------------
+        # DISPLAY SUMMARY
+        # --------------------------------------------------
+
+        print("\nStep 2: Generating cleanup summary...")
+
+        self.display_summary(summary)
+
+        # --------------------------------------------------
+        # DRY RUN
+        # --------------------------------------------------
+
+        if dry_run:
+
+            print("\nStep 3: Dry Run")
+
+            print(
+                "Dry-run mode enabled."
+            )
+
+            print(
+                "No AWS resources were modified."
+            )
+
+            return {
+                "status": "success",
+                "mode": "dry_run",
+                "summary": summary
+            }
+
+        # --------------------------------------------------
+        # EXECUTION
+        # --------------------------------------------------
+
+        print("\nStep 3: Cleanup Execution")
+
+        results = []
+
+        # EBS cleanup
+        for volume in self.get_unused_volumes():
+
+            result = self.cleanup_volume(
+                volume["VolumeId"],
+                dry_run=False
+            )
+
+            results.append(result)
+
+        # Elastic IP cleanup
+        for address in self.get_unused_elastic_ips():
+
+            result = self.cleanup_elastic_ip(
+                address["AllocationId"],
+                dry_run=False
+            )
+
+            results.append(result)
+
+        print("\nCleanup execution completed.")
+
+        return {
+            "status": "success",
+            "mode": "execute",
+            "summary": summary,
+            "results": results
+        }
