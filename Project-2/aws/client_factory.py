@@ -24,6 +24,7 @@ class AWSClientFactory:
         """
         Return existing session or create one.
         """
+
         return self.auth.create_session()
 
     def get_client(self, service_name: str):
@@ -32,17 +33,24 @@ class AWSClientFactory:
         """
 
         if service_name not in self.SUPPORTED_SERVICES:
-            raise ValueError(f"Unsupported AWS service: {service_name}")
+            raise ValueError(
+                f"Unsupported AWS service: {service_name}"
+            )
 
         try:
+
             session = self.get_session()
 
             client = session.client(service_name)
 
-            logger.info(f"{service_name} client created successfully.")
+            logger.info(
+                f"{service_name} client created successfully."
+            )
 
             return client
 
         except ClientError as e:
+
             logger.error(e)
+
             raise AWSAuthenticationError(str(e))
