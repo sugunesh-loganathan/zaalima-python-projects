@@ -593,142 +593,142 @@
 # if __name__ == "__main__":
 #     main()
 
-from aws.auth import AWSAuth
-from aws.client_factory import AWSClientFactory
-from aws.cleanup import CleanupService
-from aws.exceptions import AWSCleanupError
+# from aws.auth import AWSAuth
+# from aws.client_factory import AWSClientFactory
+# from aws.cleanup import CleanupService
+# from aws.exceptions import AWSCleanupError
 
 
-def main():
+# def main():
 
-    # ==================================================
-    # AWS AUTHENTICATION
-    # ==================================================
+#     # ==================================================
+#     # AWS AUTHENTICATION
+#     # ==================================================
 
-    print("=" * 60)
-    print("WEEK 3 - DAY 7 FINAL CLEANUP INTEGRATION TEST")
-    print("=" * 60)
+#     print("=" * 60)
+#     print("WEEK 3 - DAY 7 FINAL CLEANUP INTEGRATION TEST")
+#     print("=" * 60)
 
-    try:
+#     try:
 
-        auth = AWSAuth(
-            profile_name="default",
-            region_name="ap-south-1"
-        )
+#         auth = AWSAuth(
+#             profile_name="default",
+#             region_name="ap-south-1"
+#         )
 
-        # ==================================================
-        # AWS CLIENT FACTORY
-        # ==================================================
+#         # ==================================================
+#         # AWS CLIENT FACTORY
+#         # ==================================================
 
-        factory = AWSClientFactory(auth)
+#         factory = AWSClientFactory(auth)
 
-        # ==================================================
-        # CLEANUP SERVICE
-        # ==================================================
+#         # ==================================================
+#         # CLEANUP SERVICE
+#         # ==================================================
 
-        cleanup = CleanupService(factory)
+#         cleanup = CleanupService(factory)
 
-        # ==================================================
-        # FINAL WORKFLOW
-        # ==================================================
+#         # ==================================================
+#         # FINAL WORKFLOW
+#         # ==================================================
 
-        result = cleanup.run_cleanup_workflow(
-            dry_run=True
-        )
+#         result = cleanup.run_cleanup_workflow(
+#             dry_run=True
+#         )
 
-        # ==================================================
-        # FINAL RESULT
-        # ==================================================
+#         # ==================================================
+#         # FINAL RESULT
+#         # ==================================================
 
-        print("\n")
-        print("=" * 60)
-        print("FINAL CLEANUP WORKFLOW RESULT")
-        print("=" * 60)
+#         print("\n")
+#         print("=" * 60)
+#         print("FINAL CLEANUP WORKFLOW RESULT")
+#         print("=" * 60)
 
-        print(
-            f"Status : {result['status']}"
-        )
+#         print(
+#             f"Status : {result['status']}"
+#         )
 
-        print(
-            f"Mode   : {result['mode']}"
-        )
+#         print(
+#             f"Mode   : {result['mode']}"
+#         )
 
-        # ==================================================
-        # FINAL SUMMARY
-        # ==================================================
+#         # ==================================================
+#         # FINAL SUMMARY
+#         # ==================================================
 
-        summary = result["summary"]
+#         summary = result["summary"]
 
-        print("\nFinal Resource Summary")
+#         print("\nFinal Resource Summary")
 
-        print(
-            f"EBS Volumes Scanned : "
-            f"{summary['ebs']['total']}"
-        )
+#         print(
+#             f"EBS Volumes Scanned : "
+#             f"{summary['ebs']['total']}"
+#         )
 
-        print(
-            f"EBS Cleanup Candidates : "
-            f"{summary['ebs']['cleanup_candidates']}"
-        )
+#         print(
+#             f"EBS Cleanup Candidates : "
+#             f"{summary['ebs']['cleanup_candidates']}"
+#         )
 
-        print(
-            f"Elastic IPs Scanned : "
-            f"{summary['elastic_ips']['total']}"
-        )
+#         print(
+#             f"Elastic IPs Scanned : "
+#             f"{summary['elastic_ips']['total']}"
+#         )
 
-        print(
-            f"Elastic IP Cleanup Candidates : "
-            f"{summary['elastic_ips']['cleanup_candidates']}"
-        )
+#         print(
+#             f"Elastic IP Cleanup Candidates : "
+#             f"{summary['elastic_ips']['cleanup_candidates']}"
+#         )
 
-        print("\nCleanup Recommendations")
+#         print("\nCleanup Recommendations")
 
-        if summary["recommendations"]:
+#         if summary["recommendations"]:
 
-            for recommendation in summary["recommendations"]:
+#             for recommendation in summary["recommendations"]:
 
-                print(
-                    f"- "
-                    f"{recommendation['resource_type']} | "
-                    f"{recommendation['resource_id']} | "
-                    f"{recommendation['recommendation']}"
-                )
+#                 print(
+#                     f"- "
+#                     f"{recommendation['resource_type']} | "
+#                     f"{recommendation['resource_id']} | "
+#                     f"{recommendation['recommendation']}"
+#                 )
 
-        else:
+#         else:
 
-            print("No cleanup recommendations.")
+#             print("No cleanup recommendations.")
 
-        # ==================================================
-        # SAFETY CONFIRMATION
-        # ==================================================
+#         # ==================================================
+#         # SAFETY CONFIRMATION
+#         # ==================================================
 
-        print("\nSafety Check")
+#         print("\nSafety Check")
 
-        if result["mode"] == "dry_run":
+#         if result["mode"] == "dry_run":
 
-            print(
-                "PASS - Dry Run enabled."
-            )
+#             print(
+#                 "PASS - Dry Run enabled."
+#             )
 
-            print(
-                "PASS - No AWS resources were modified."
-            )
+#             print(
+#                 "PASS - No AWS resources were modified."
+#             )
 
-        print("\n")
-        print("=" * 60)
-        print("WEEK 3 - DAY 7 TEST COMPLETED")
-        print("=" * 60)
+#         print("\n")
+#         print("=" * 60)
+#         print("WEEK 3 - DAY 7 TEST COMPLETED")
+#         print("=" * 60)
 
-    except AWSCleanupError as e:
+#     except AWSCleanupError as e:
 
-        print("\nCleanup Error:")
-        print(e)
+#         print("\nCleanup Error:")
+#         print(e)
 
-    except Exception as e:
+#     except Exception as e:
 
-        print("\nUnexpected Error:")
-        print(e)
+#         print("\nUnexpected Error:")
+#         print(e)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

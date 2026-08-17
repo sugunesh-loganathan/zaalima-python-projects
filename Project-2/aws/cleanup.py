@@ -1,4 +1,5 @@
 from botocore.exceptions import ClientError
+from aws.cloudwatch import CloudWatchService
 
 from aws.ebs import EBSService
 from aws.eip import ElasticIPService
