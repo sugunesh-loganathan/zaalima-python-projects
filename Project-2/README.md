@@ -1,40 +1,81 @@
-# Project 2 - Cloud Infrastructure Auditor & Cost Optimizer
+# Cloud Infrastructure Auditor & Cost Optimizer
 
-## Scanner Module
+## Project Overview
 
-The scanner module analyzes AWS resources and identifies resources that may require optimization or cleanup.
+Project 2 is a Python-based command-line application designed to audit
+cloud infrastructure and identify resources that may be unused or
+underutilized.
 
-### Implemented Scanners
+The application is being developed with a modular architecture so that
+different AWS services can be scanned independently and their results
+can later be used for reporting and cost optimization.
 
-- EC2 Scanner
-- EBS Scanner
-- Elastic IP Scanner
-- CloudWatch Utilization Scanner
+---
 
-### Cleanup Recommendation Module
+## Objectives
 
-The cleanup module can:
+The main objectives of the project are:
 
-- Detect unattached EBS volumes.
-- Detect unassociated Elastic IP addresses.
-- Detect potentially idle EC2 resources using CPU utilization.
-- Generate resource-specific cleanup recommendations.
-- Assign recommendation priorities.
-- Handle missing CloudWatch utilization data safely.
+- Discover AWS cloud resources.
+- Analyze resource usage and state.
+- Identify potentially unused or underutilized resources.
+- Provide recommendations for optimization.
+- Generate structured scan results.
+- Provide a simple command-line interface for users.
+- Build the application using a modular and extensible architecture.
 
-### Testing
+---
 
-The cleanup recommendation module includes unit tests covering:
+## Technology Stack
 
-- Unused resource detection.
-- Idle resource detection.
-- Cleanup recommendations.
-- Resource association checks.
-- Missing CPU utilization data.
-- Normal resources requiring no action.
+| Technology | Purpose |
+|---|---|
+| Python | Core programming language |
+| Typer | Command-line interface |
+| Boto3 | AWS service integration |
+| AWS EC2 | Infrastructure resource discovery |
+| AWS CloudWatch | Resource utilization monitoring |
+| Logging | Application and scanner logging |
+| Git & GitHub | Version control and collaboration |
 
-### Week 3 Status
+---
 
-Week 3 - Cleanup Scanner: **Completed**
+## Project Structure
 
-The Cleanup Recommendation Module is ready for further integration and refinement.
+```text
+Project-2/
+│
+├── app/
+│   ├── aws/
+│   │   ├── auth.py
+│   │   ├── session.py
+│   │   └── __init__.py
+│   │
+│   ├── cli/
+│   │   ├── scan.py
+│   │   ├── report.py
+│   │   ├── cleanup.py
+│   │   ├── version.py
+│   │   └── __init__.py
+│   │
+│   ├── config/
+│   │   └── ...
+│   │
+│   ├── models/
+│   │   └── scan_result.py
+│   │
+│   ├── scanner/
+│   │   ├── base_scanner.py
+│   │   ├── ec2_scanner.py
+│   │   ├── ebs_scanner.py
+│   │   ├── iam_scanner.py
+│   │   ├── s3_scanner.py
+│   │   └── ...
+│   │
+│   ├── utils/
+│   │   └── ...
+│   │
+│   ├── main.py
+│   └── __init__.py
+│
+└── README.md
