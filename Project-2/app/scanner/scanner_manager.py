@@ -1,4 +1,5 @@
 from app.scanner.ec2_scanner import EC2Scanner
+from app.scanner.ebs_scanner import EBSScanner
 
 
 class ScannerManager:
@@ -9,6 +10,7 @@ class ScannerManager:
     def __init__(self):
         self.scanners = [
             EC2Scanner(),
+            EBSScanner(),
         ]
 
     def scan_all(self):
