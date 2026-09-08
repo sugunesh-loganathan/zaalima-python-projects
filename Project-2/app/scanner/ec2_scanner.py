@@ -2,9 +2,11 @@ from datetime import datetime, timedelta, timezone
 
 from app.scanner.base_scanner import BaseScanner
 from app.models.scan_result import ScanResult
-from app.aws.session import AWSSession
+from app.AWS.session import AWSSession
+from app.scanner.exceptions import ScannerException
 
 from botocore.exceptions import (
+    BotoCoreError,
     NoCredentialsError,
     PartialCredentialsError,
     ClientError,
@@ -25,14 +27,12 @@ class EC2Scanner(BaseScanner):
         """
         Create and return an EC2 boto3 client.
         """
-
         return self.session_manager.create_client("ec2")
 
     def get_cloudwatch_client(self):
         """
         Create and return a CloudWatch boto3 client.
         """
-
         return self.session_manager.create_client("cloudwatch")
 
     def get_cpu_utilization(self, instance_id):
@@ -81,9 +81,8 @@ class EC2Scanner(BaseScanner):
 
             instances = []
 
-            for reservation in response["Reservations"]:
-
-                for instance in reservation["Instances"]:
+            for reservation in response.get("Reservations", []):
+                for instance in reservation.get("Instances", []):
 
                     instance_id = instance["InstanceId"]
 
@@ -140,54 +139,28 @@ class EC2Scanner(BaseScanner):
                 "instances": instances,
             }
 
-        except NoCredentialsError:
+        except NoCredentialsError as e:
 
             logger.error("AWS credentials not found.")
+            raise ScannerException("AWS credentials not found.") from e
 
-            result = ScanResult(
-                service="EC2",
-                status="failed",
-                resources_found=0,
-                message="AWS credentials not found.",
-            )
-
-            return result.to_dict()
-
-        except PartialCredentialsError:
+        except PartialCredentialsError as e:
 
             logger.error("Incomplete AWS credentials.")
+            raise ScannerException("Incomplete AWS credentials.") from e
 
-            result = ScanResult(
-                service="EC2",
-                status="failed",
-                resources_found=0,
-                message="Incomplete AWS credentials.",
-            )
-
-            return result.to_dict()
-
-        except ClientError as e:
+        except (ClientError, BotoCoreError) as e:
 
             logger.error(f"AWS EC2/CloudWatch API error: {e}")
+            raise ScannerException(str(e)) from e
 
-            result = ScanResult(
-                service="EC2",
-                status="failed",
-                resources_found=0,
-                message=f"AWS EC2/CloudWatch API error: {e}",
-            )
+        except ScannerException:
 
-            return result.to_dict()
+            raise
 
         except Exception as e:
 
             logger.error(f"Unexpected EC2 scanner error: {e}")
-
-            result = ScanResult(
-                service="EC2",
-                status="failed",
-                resources_found=0,
-                message=f"Unexpected scanner error: {e}",
-            )
-
-            return result.to_dict()
+            raise ScannerException(
+                f"Unexpected scanner error: {e}"
+            ) from e

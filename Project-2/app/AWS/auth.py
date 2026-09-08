@@ -6,7 +6,7 @@ from botocore.exceptions import (
     ClientError,
 )
 
-from app.aws.session import AWSSession
+from app.AWS.session import AWSSession
 
 
 class AWSAuthenticator:

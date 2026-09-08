@@ -1,8 +1,10 @@
 from app.scanner.base_scanner import BaseScanner
 from app.models.scan_result import ScanResult
-from app.aws.session import AWSSession
+from app.AWS.session import AWSSession
+from app.scanner.exceptions import ScannerException
 
 from botocore.exceptions import (
+    BotoCoreError,
     NoCredentialsError,
     PartialCredentialsError,
     ClientError,
@@ -23,7 +25,6 @@ class EBSScanner(BaseScanner):
         """
         Create and return an EC2 boto3 client.
         """
-
         return self.session_manager.create_client("ec2")
 
     def scan(self):
@@ -52,7 +53,8 @@ class EBSScanner(BaseScanner):
                     "encrypted": volume.get("Encrypted"),
                     "instance_id": (
                         attachments[0].get("InstanceId")
-                        if attachments else None
+                        if attachments
+                        else None
                     ),
                 }
 
@@ -82,54 +84,28 @@ class EBSScanner(BaseScanner):
                 "volumes": volumes,
             }
 
-        except NoCredentialsError:
+        except NoCredentialsError as e:
 
             logger.error("AWS credentials not found.")
+            raise ScannerException("AWS credentials not found.") from e
 
-            result = ScanResult(
-                service="EBS",
-                status="failed",
-                resources_found=0,
-                message="AWS credentials not found.",
-            )
-
-            return result.to_dict()
-
-        except PartialCredentialsError:
+        except PartialCredentialsError as e:
 
             logger.error("Incomplete AWS credentials.")
+            raise ScannerException("Incomplete AWS credentials.") from e
 
-            result = ScanResult(
-                service="EBS",
-                status="failed",
-                resources_found=0,
-                message="Incomplete AWS credentials.",
-            )
-
-            return result.to_dict()
-
-        except ClientError as e:
+        except (ClientError, BotoCoreError) as e:
 
             logger.error(f"AWS EBS API error: {e}")
+            raise ScannerException(str(e)) from e
 
-            result = ScanResult(
-                service="EBS",
-                status="failed",
-                resources_found=0,
-                message=f"AWS EBS API error: {e}",
-            )
+        except ScannerException:
 
-            return result.to_dict()
+            raise
 
         except Exception as e:
 
             logger.error(f"Unexpected EBS scanner error: {e}")
-
-            result = ScanResult(
-                service="EBS",
-                status="failed",
-                resources_found=0,
-                message=f"Unexpected scanner error: {e}",
-            )
-
-            return result.to_dict()
+            raise ScannerException(
+                f"Unexpected scanner error: {e}"
+            ) from e
